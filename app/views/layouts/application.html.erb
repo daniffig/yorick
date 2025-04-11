@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>App</title>
+    <title><%= Rails.configuration.x.app_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#312e81] text-white">
+    <main class="flex-1 max-w-4xl mx-auto px-4 py-6">
+      <%= yield %>
+    </main>
+
+    <footer class="text-center text-sm py-4">
+      &copy; <%= Time.current.year %> <%= Rails.configuration.x.app_name %>
+      by <a href="https://github.com/daniffig" target="_blank" class="hover:underline">daniffig</a>
+    </footer>
   </body>
 </html>

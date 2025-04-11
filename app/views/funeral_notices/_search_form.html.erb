@@ -1,0 +1,19 @@
+<div class="bg-white shadow-lg rounded-2xl p-8 mb-10 backdrop-blur-md text-gray-700">
+  <%= form_with url: funeral_notices_path, method: :get, local: true do |f| %>
+    <div class="space-y-6">
+      <%= f.text_field :full_name,
+        placeholder: "Nombre completo. Ej: Tom Marvolo Riddle",
+        value: params[:full_name],
+        class: "w-full text-lg px-6 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" %>
+
+      <%= f.text_field :content,
+        placeholder: "Contenido. Ej: tu amigo Harry",
+        value: params[:content],
+        class: "w-full text-lg px-6 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" %>
+
+      <div class="flex justify-center">
+        <%= f.submit "Buscar", class: "bg-[#312e81] text-white text-lg px-8 py-4 rounded-xl hover:bg-[#0f172a] transition shadow-md cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+</div>

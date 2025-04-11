@@ -1,36 +1,30 @@
-<h1>Buscar Avisos Fúnebres</h1>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-center"><%= Rails.configuration.x.app_name %></h1>
 
-<%= form_with url: funeral_notices_path, method: :get, local: true, class: "search-form" do %>
-  <div style="margin-bottom: 1em;">
-    <%= label_tag :full_name, "Nombre completo:" %><br>
-    <%= text_field_tag :full_name, params[:full_name], placeholder: "Ej: Mario Carrelli", size: 40 %>
-  </div>
+  <div class="grid gap-4">
+    <%= render 'search_form' %>
 
-  <div style="margin-bottom: 1em;">
-    <%= label_tag :content, "Contenido del aviso:" %><br>
-    <%= text_field_tag :content, params[:content], placeholder: "Ej: Velatorio, 53 Nº 1177", size: 60 %>
-  </div>
+    <% if @funeral_notices.any? %>
+      <div class="flex justify-center">
+        <%= render(PaginationComponent.new(pagy: @pagy)) %>
+      </div>
 
-  <%= submit_tag "🔍 Buscar", class: "search-button" %>
-<% end %>
+      <% @funeral_notices.each do |notice| %>
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition">
+          <h2 class="text-xl font-semibold text-[#0f172a]"><%= notice.full_name %></h2>
+          <p class="text-sm text-gray-500 mb-2"><%= notice.published_on.strftime('%B %d, %Y') %></p>
+          <p class="text-gray-700 mb-4"><%= notice.content %></p>
+          <% if notice.source_link.present? %>
+            <a href="<%= notice.source_link %>" target="_blank" class="text-sm text-[#312e81] hover:text-[#0f172a]">Ver en el diario</a>
+          <% end %>
+        </div>
+      <% end %>
 
-
-<% if @funeral_notices.any? %>
-  <h2>Resultados:</h2>
-  <ul>
-    <% @funeral_notices.each do |notice| %>
-      <li>
-        <strong><%= notice.full_name %></strong><br>
-        <em><%= notice.published_on.strftime("%d/%m/%Y") %></em><br>
-        <p><%= notice.content %></p>
-        <small><%= link_to "Fuente", notice.source_link, target: "_blank" %></small>
-      </li>
+      <div class="flex justify-center">
+        <%= render(PaginationComponent.new(pagy: @pagy)) %>
+      </div>
+    <% else %>
+      <p class="text-center text-white mt-10">No se encontraron resultados.</p>
     <% end %>
-  </ul>
-<% elsif params[:q].present? %>
-  <p>No se encontraron resultados para "<strong><%= params[:q] %></strong>".</p>
-<% end %>
-
-<% if @funeral_notices.respond_to?(:total_pages) && @funeral_notices.total_pages > 1 %>
-  <%= paginate @funeral_notices %>
-<% end %>
+  </div>
+</div>

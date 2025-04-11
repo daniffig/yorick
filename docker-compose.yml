@@ -20,14 +20,15 @@ services:
     volumes:
       - .:/app
       - bundle_cache:/usr/local/bundle
-      # - node_modules:/app/node_modules
-    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+      - node_modules:/app/node_modules
+    command: ./bin/dev
     depends_on:
       - db
     environment:
       - RAILS_ENV=development
       - WEBPACKER_DEV_SERVER_HOST=webpacker
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp_development
+    tty: true
 
   # webpacker:
   #   <<: *web
@@ -60,4 +61,4 @@ volumes:
   bundle_cache:
   db_data:
   # elasticsearch_data:
-  # node_modules:
+  node_modules:

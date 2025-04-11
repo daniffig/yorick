@@ -1,6 +1,6 @@
 class FuneralNoticeScraper
-  START_DATE = Date.parse("2006-05-02")
   BASE_URL = "https://funebres.eldia.com/edis/%{date}/funebres2.htm"
+  START_DATE = Date.parse("2006-05-02")
 
   def initialize(date:)
     @date = date.is_a?(String) ? Date.parse(date) : date
@@ -21,6 +21,7 @@ class FuneralNoticeScraper
     begin
       html = URI.open(url).read
       doc = Nokogiri::HTML(html)
+
       extract_notices(doc, @date, url)
     rescue => e
       Rails.logger.warn "⚠️ Error scraping #{url}: #{e.message}"

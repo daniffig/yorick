@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.2.3"
+ruby "3.2.8"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
@@ -66,4 +66,6 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem 'kaminari'
+gem "pagy", "~> 9.3"
+gem "tailwindcss-rails", "~> 4.2"
+gem "view_component", "~> 3.21"
