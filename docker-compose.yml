@@ -3,9 +3,9 @@ services:
     image: postgres:15
     container_name: myapp-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: myapp_development
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=myapp_development
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -25,10 +25,22 @@ services:
     depends_on:
       - db
     environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp_development
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - RAILS_ENV=development
       - WEBPACKER_DEV_SERVER_HOST=webpacker
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp_development
     tty: true
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
 
   # webpacker:
   #   <<: *web
@@ -60,5 +72,5 @@ services:
 volumes:
   bundle_cache:
   db_data:
-  # elasticsearch_data:
+  elasticsearch_data:
   node_modules:

@@ -1,0 +1,13 @@
+# config/chewy.yml
+# separate environment configs
+
+development:
+  host: 'elasticsearch:9200'
+
+test:
+  host: 'elasticsearch:9250'
+  prefix: 'test'
+
+production:
+  host: <%= ENV["CHEWY_HOST"] %>
+  prefix: <%= ENV.fetch("CHEWY_PREFIX", "yorick_production") %>
