@@ -1,11 +1,11 @@
 services:
   db:
     image: postgres:15
-    container_name: myapp-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=myapp_development
+      - TZ=America/Argentina/Buenos_Aires
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -15,6 +15,9 @@ services:
     build:
       context: .
       dockerfile: docker/development/web/Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
     ports:
       - "3000:3000"
     volumes:
@@ -24,11 +27,11 @@ services:
     command: ./bin/dev
     depends_on:
       - db
+      - elasticsearch
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp_development
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - RAILS_ENV=development
-      - WEBPACKER_DEV_SERVER_HOST=webpacker
+      - TZ=America/Argentina/Buenos_Aires
     tty: true
 
   elasticsearch:
@@ -37,37 +40,11 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - TZ=America/Argentina/Buenos_Aires
     ports:
       - "9200:9200"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-
-  # webpacker:
-  #   <<: *web
-  #   command: sh -c "rm -rf public/packs && ./bin/webpack-dev-server --inline --hot true"
-  #   ports:
-  #     - "3035:3035"
-  #   logging:
-  #     driver: none
-
-  # elasticsearch:
-  #   image: elasticsearch:7.17.27
-  #   environment:
-  #     - cluster.name=docker-cluster
-  #     - bootstrap.memory_lock=true
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - xpack.security.enabled=false
-  #     - discovery.type=single-node
-  #   # ulimits:
-  #   #   memlock:
-  #   #     soft: -1
-  #   #     hard: -1
-  #   volumes:
-  #     - elasticsearch_data:/usr/share/elasticsearch/data
-  #   ports:
-  #     - "9200:9200"
-  #   logging:
-  #     driver: none
 
 volumes:
   bundle_cache:
