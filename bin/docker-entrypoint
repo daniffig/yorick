@@ -5,4 +5,10 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
+# Start cron service
+service cron start
+
+# Update crontab with whenever
+bundle exec whenever --update-crontab
+
 exec "${@}"
