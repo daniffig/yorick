@@ -1,16 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
-    <title><%= Rails.configuration.x.app_name %></title>
+    <title><%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="<%= ENV['GOOGLE_SITE_VERIFICATION'] %>" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="<%= content_for?(:canonical_url) ? yield(:canonical_url) : request.original_url %>" />
+    
+    <!-- Pagination Meta Tags -->
+    <% if content_for?(:prev_url) %>
+      <link rel="prev" href="<%= yield(:prev_url) %>" />
+    <% end %>
+    <% if content_for?(:next_url) %>
+      <link rel="next" href="<%= yield(:next_url) %>" />
+    <% end %>
+    
+    <!-- Social Media Meta Tags (Open Graph & Twitter Card) -->
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %>" />
+    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= asset_path('social-share.png', skip_pipeline: true) %>" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %>" />
+    <meta name="twitter:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>" />
+    <meta name="twitter:image" content="<%= asset_path('social-share.png', skip_pipeline: true) %>" />
+    <!-- End Social Media Meta Tags -->
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
     <%= javascript_importmap_tags %>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="<%= asset_path('application.css') %>" as="style">
+    <link rel="preload" href="<%= asset_path('application.js') %>" as="script">
+    
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+
+    <!-- Meta tags -->
+    <meta name="keywords" content="avisos fúnebres, obituarios, La Plata, servicios fúnebres, diario">
+    <meta name="author" content="<%= Rails.configuration.x.app_name %>">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="<%= Rails.configuration.x.app_name %>">
+    <meta property="og:locale" content="es_AR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:url" content="<%= request.original_url %>">
+    
+    <!-- Pagination meta tags -->
+    <% if content_for?(:pagination_meta) %>
+      <%= yield(:pagination_meta) %>
+    <% end %>
+    
+    <!-- Structured Data -->
+    <%= yield(:structured_data) if content_for?(:structured_data) %>
   </head>
 
   <body class="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#312e81] text-white">
+    <!-- Organization Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "<%= Rails.configuration.x.app_name %>",
+      "url": "<%= root_url %>",
+      "description": "Servicio de búsqueda de avisos fúnebres en La Plata, Argentina",
+      "foundingDate": "2025",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "La Plata",
+        "addressRegion": "Buenos Aires",
+        "addressCountry": "AR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Spanish"
+      },
+      "sameAs": [
+        "https://github.com/daniffig"
+      ]
+    }
+    </script>
+
     <main class="flex-1 max-w-4xl mx-auto px-4 py-6">
       <%= yield %>
     </main>

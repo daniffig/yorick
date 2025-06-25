@@ -1,15 +1,19 @@
 <% if @pagy.pages > 1 %>
-  <nav class="flex justify-center space-x-2 text-sm">
+  <nav class="flex justify-center space-x-2 text-sm" aria-label="Paginación">
     <%# Previous %>
     <% if @pagy.prev %>
-      <%= link_to "←", url_for(params_to_keep.merge(page: @pagy.prev)), class: "px-4 py-2 rounded bg-[#312e81] text-white hover:bg-[#0f172a]", title: "Anterior" %>
+      <%= link_to "←", url_for(params_to_keep.merge(page: @pagy.prev)), 
+          class: "px-4 py-2 rounded bg-[#312e81] text-white hover:bg-[#0f172a]", 
+          title: "Anterior",
+          rel: "prev" %>
     <% else %>
       <span class="px-4 py-2 rounded bg-gray-300 text-gray-500 cursor-not-allowed" title="Anterior">←</span>
     <% end %>
 
     <%# First Page %>
     <% unless @pagy.page == 1 %>
-      <%= link_to 1, url_for(params_to_keep.merge(page: 1)), class: "px-3 py-2 bg-[#312e81] text-white rounded hover:bg-[#0f172a]" %>
+      <%= link_to 1, url_for(params_to_keep.merge(page: 1)), 
+          class: "px-3 py-2 bg-[#312e81] text-white rounded hover:bg-[#0f172a]" %>
     <% end %>
 
     <%# Ellipsis before current page %>
@@ -18,7 +22,7 @@
     <% end %>
 
     <%# Current Page (highlighted) %>
-    <span class="px-3 py-2 bg-[#0f172a] text-white rounded font-semibold"><%= @pagy.page %></span>
+    <span class="px-3 py-2 bg-[#0f172a] text-white rounded font-semibold" aria-current="page"><%= @pagy.page %></span>
 
     <%# Ellipsis after current page %>
     <% if @pagy.page < @pagy.last - 1 %>
@@ -27,14 +31,18 @@
 
     <%# Last Page %>
     <% unless @pagy.page == @pagy.last %>
-      <%= link_to @pagy.last, url_for(params_to_keep.merge(page: @pagy.last)), class: "px-3 py-2 bg-[#312e81] text-white rounded hover:bg-[#0f172a]" %>
+      <%= link_to @pagy.last, url_for(params_to_keep.merge(page: @pagy.last)), 
+          class: "px-3 py-2 bg-[#312e81] text-white rounded hover:bg-[#0f172a]" %>
     <% end %>
 
     <%# Next %>
     <% if @pagy.next %>
-      <%= link_to "→", url_for(params_to_keep.merge(page: @pagy.next)), class: "px-4 py-2 rounded bg-[#312e81] text-white hover:bg-[#0f172a]", title: 'Siguiente' %>
+      <%= link_to "→", url_for(params_to_keep.merge(page: @pagy.next)), 
+          class: "px-4 py-2 rounded bg-[#312e81] text-white hover:bg-[#0f172a]", 
+          title: 'Siguiente',
+          rel: "next" %>
     <% else %>
-      <span class="px-4 py-2 rounded bg-gray-300 text-gray-500 cursor-not-allowed" title="Siguiente">→</span>
+      <span class="px-2 py-2 rounded bg-gray-300 text-gray-500 cursor-not-allowed" title="Siguiente">→</span>
     <% end %>
   </nav>
 <% end %>

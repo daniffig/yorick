@@ -2,10 +2,10 @@
 # separate environment configs
 
 development:
-  host: 'elasticsearch:9200'
+  host: 'localhost:9200'
 
 test:
-  host: 'elasticsearch:9250'
+  host: 'localhost:9250'
   prefix: 'test'
 
 production:

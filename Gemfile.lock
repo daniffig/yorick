@@ -122,6 +122,7 @@ GEM
     faraday (1.2.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
+    foreman (0.88.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.7)
@@ -311,6 +312,7 @@ DEPENDENCIES
   chewy (~> 7.2.7)
   debug
   elasticsearch (~> 7.0)
+  foreman
   importmap-rails
   jbuilder
   pagy (~> 9.3)

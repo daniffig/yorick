@@ -14,6 +14,41 @@ class FuneralNoticesController < ApplicationController
     else
       @pagy, @funeral_notices = pagy(FuneralNotice.order(published_on: :desc, id: :desc))
     end
+
+    # Set cache headers for index page
+    fresh_when(@funeral_notices.compact, etag: [@funeral_notices, @pagy.page, params.permit(:full_name, :content)])
+  end
+
+  def show
+    date_str = params[:date]
+    name_hash = params[:name_hash]
+
+    # Validate we have both parameters
+    raise ActiveRecord::RecordNotFound if date_str.blank? || name_hash.blank?
+
+    date = Date.parse(date_str)
+
+    # Parse name-hash_id format (e.g., "mariana-santos-f6524f")
+    if name_hash.include?('-')
+      parts = name_hash.split('-')
+      hash_id = parts.last # Last part is the hash
+      name_dasherized = parts[0..-2].join('-') # Everything except last part is the name
+    else
+      raise ActiveRecord::RecordNotFound
+    end
+
+    @funeral_notice = FuneralNotice.find_by(published_on: date, hash_id: hash_id)
+    raise ActiveRecord::RecordNotFound unless @funeral_notice
+
+    # Verify the name matches (additional security check)
+    expected_name = @funeral_notice.full_name.parameterize
+    unless name_dasherized == expected_name
+      redirect_to funeral_notice_path(@funeral_notice.route_params), status: :moved_permanently
+    end
+
+    # Set cache headers for show page
+    fresh_when(@funeral_notice, etag: @funeral_notice)
+    Rails.logger.info "Found funeral notice: #{@funeral_notice.full_name} (ID: #{@funeral_notice.id})"
   end
 
   private

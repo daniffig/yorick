@@ -1,0 +1,206 @@
+<!-- Enhanced WebSite Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "<%= Rails.configuration.x.app_name %>",
+  "url": "<%= root_url %>",
+  "description": "Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario El Día.",
+  "inLanguage": "es-AR",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "<%= funeral_notices_url %>?full_name={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "<%= Rails.configuration.x.app_name %>",
+    "url": "<%= root_url %>"
+  }
+}
+</script>
+
+<!-- LocalBusiness Schema for La Plata -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "<%= Rails.configuration.x.app_name %>",
+  "description": "Servicio de búsqueda de avisos fúnebres en La Plata, Argentina",
+  "url": "<%= root_url %>",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "La Plata",
+    "addressRegion": "Buenos Aires",
+    "addressCountry": "AR"
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "La Plata"
+  },
+  "serviceType": "Búsqueda de avisos fúnebres",
+  "availableLanguage": "Spanish"
+}
+</script>
+
+<% if defined?(@funeral_notice) && @funeral_notice %>
+  <!-- Enhanced Individual funeral notice structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "<%= @funeral_notice.full_name %>",
+    "datePublished": "<%= @funeral_notice.published_on.iso8601 %>",
+    "dateModified": "<%= @funeral_notice.updated_at.iso8601 %>",
+    "dateCreated": "<%= @funeral_notice.created_at.iso8601 %>",
+    "articleBody": "<%= @funeral_notice.content.gsub('"', '\\"').gsub("\n", ' ').strip %>",
+    "wordCount": <%= @funeral_notice.content.split.length %>,
+    "articleSection": "Avisos Fúnebres",
+    "keywords": "avisos fúnebres, obituarios, La Plata, <%= @funeral_notice.full_name %>",
+    "author": {
+      "@type": "Organization",
+      "name": "Diario El Día",
+      "url": "https://www.eldia.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "<%= Rails.configuration.x.app_name %>",
+      "url": "<%= root_url %>",
+      "foundingDate": "2025"
+    },
+    "description": "<%= @funeral_notice.content.truncate(200).gsub('"', '\\"') %>",
+    "url": "<%= funeral_notice_url(@funeral_notice.route_params) %>",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "<%= funeral_notice_url(@funeral_notice.route_params) %>"
+    },
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "<%= Rails.configuration.x.app_name %>",
+      "url": "<%= root_url %>"
+    }
+  }
+  </script>
+
+  <!-- BreadcrumbList Schema for individual funeral notice -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "<%= root_url %>"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Avisos Fúnebres",
+        "item": "<%= funeral_notices_url %>"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "<%= @funeral_notice.full_name %>",
+        "item": "<%= funeral_notice_url(@funeral_notice.route_params) %>"
+      }
+    ]
+  }
+  </script>
+<% elsif @funeral_notices&.any? %>
+  <!-- Enhanced Funeral notices list structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Avisos Fúnebres en La Plata",
+    "description": "Lista de avisos fúnebres publicados en La Plata",
+    "numberOfItems": <%= @funeral_notices.count %>,
+    "itemListElement": [
+      <% @funeral_notices.each_with_index do |notice, index| %>
+        {
+          "@type": "Article",
+          "position": <%= index + 1 %>,
+          "url": "<%= funeral_notice_url(notice.route_params) %>",
+          "name": "<%= notice.full_name %>",
+          "datePublished": "<%= notice.published_on.iso8601 %>",
+          "description": "<%= notice.content.truncate(150).gsub('"', '\\"') %>",
+          "articleSection": "Avisos Fúnebres",
+          "author": {
+            "@type": "Organization",
+            "name": "Diario El Día"
+          }
+        }<%= "," unless index == @funeral_notices.size - 1 %>
+      <% end %>
+    ]
+  }
+  </script>
+
+  <!-- BreadcrumbList Schema for funeral notices list -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "<%= root_url %>"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Avisos Fúnebres",
+        "item": "<%= request.original_url %>"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Enhanced Pagination structured data -->
+  <% if @pagy && @pagy.pages > 1 %>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "<%= Rails.configuration.x.app_name %>",
+      "description": "Avisos fúnebres en La Plata - Página <%= @pagy.page %> de <%= @pagy.pages %>",
+      "url": "<%= request.original_url %>",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "<%= Rails.configuration.x.app_name %>",
+        "url": "<%= root_url %>"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": <%= @pagy.count %>,
+        "itemListElement": [
+          <% @funeral_notices.each_with_index do |notice, index| %>
+            {
+              "@type": "ListItem",
+              "position": <%= @pagy.from + index %>,
+              "item": {
+                "@type": "Article",
+                "name": "<%= notice.full_name %>",
+                "url": "<%= funeral_notice_url(notice.route_params) %>"
+              }
+            }<%= "," unless index == @funeral_notices.size - 1 %>
+          <% end %>
+        ]
+      }
+      <% if @pagy.prev %>
+        ,"previousPage": "<%= url_for(request.query_parameters.merge(page: @pagy.prev)) %>"
+      <% end %>
+      <% if @pagy.next %>
+        ,"nextPage": "<%= url_for(request.query_parameters.merge(page: @pagy.next)) %>"
+      <% end %>
+    }
+    </script>
+  <% end %>
+<% end %>

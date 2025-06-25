@@ -19,8 +19,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_10_012235) do
     t.text "content"
     t.date "published_on"
     t.string "source_link"
+    t.string "hash_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["hash_id"], name: "index_funeral_notices_on_hash_id", unique: true
+    t.index ["published_on", "hash_id"], name: "index_funeral_notices_on_published_on_and_hash_id"
   end
 
 end

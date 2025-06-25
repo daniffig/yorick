@@ -1,9 +1,29 @@
-<div class="max-w-4xl mx-auto px-4 py-8">
+<% content_for :title, "#{params[:full_name].present? ? "#{params[:full_name]} - " : ''}#{Rails.configuration.x.app_name}" %>
+<% content_for :description, "Buscar avisos fúnebres#{params[:full_name].present? ? " de #{params[:full_name]}" : ''} en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario." %>
+
+<%# Canonical URL %>
+<% content_for :canonical_url, request.original_url %>
+
+<%# Pagination meta tags %>
+<% if @pagy && @pagy.pages > 1 %>
+  <% if @pagy.prev %>
+    <% content_for :prev_url, url_for(request.query_parameters.merge(page: @pagy.prev)) %>
+  <% end %>
+  <% if @pagy.next %>
+    <% content_for :next_url, url_for(request.query_parameters.merge(page: @pagy.next)) %>
+  <% end %>
+<% end %>
+
+<%= render 'structured_data' %>
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <%= render 'breadcrumb' %>
+
   <h1 class="text-3xl font-bold mb-6 text-center"><%= Rails.configuration.x.app_name %></h1>
 
-  <div class="grid gap-4">
-    <%= render 'search_form' %>
+  <%= render 'search_form' %>
 
+  <div class="mt-8">
     <% if @funeral_notices.any? %>
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
         <p class="">
@@ -13,23 +33,20 @@
         <%= render(PaginationComponent.new(pagy: @pagy)) %>
       </div>
 
-      <% @funeral_notices.each do |notice| %>
-        <% highlighted_fields = highlight_fields(notice, params[:full_name], params[:content]) %>
-        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition">
-          <h2 class="text-xl font-semibold text-[#0f172a]"><%= highlighted_fields[:full_name].html_safe %></h2>
-          <p class="text-sm text-gray-500 mb-2"><%= notice.published_on.strftime('%B %d, %Y') %></p>
-          <p class="text-gray-700 mb-4"><%= highlighted_fields[:content].html_safe %></p>
-          <% if notice.source_link.present? %>
-            <a href="<%= notice.source_link %>" target="_blank" class="text-sm text-[#312e81] hover:text-[#0f172a]">Ver en el diario</a>
-          <% end %>
-        </div>
-      <% end %>
+      <div class="grid gap-6">
+        <% @funeral_notices.each do |notice| %>
+          <% highlighted_fields = highlight_fields(notice, params[:full_name], params[:content]) %>
+          <%= render 'funeral_notice_card', notice: notice, highlighted_fields: highlighted_fields %>
+        <% end %>
+      </div>
 
-      <div class="flex justify-center">
-        <%= render(PaginationComponent.new(pagy: @pagy)) %>
+      <div class="flex justify-center mt-6">
+        <%= render PaginationComponent.new(pagy: @pagy) %>
       </div>
     <% else %>
-      <p class="text-center text-white mt-10">No se encontraron resultados.</p>
+      <div class="text-center py-12">
+        <p class="text-gray-400 text-lg">No se encontraron resultados.</p>
+      </div>
     <% end %>
   </div>
 </div>
