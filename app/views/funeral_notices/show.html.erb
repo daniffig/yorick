@@ -1,0 +1,15 @@
+<% content_for :title, "#{@funeral_notice.full_name} - #{@funeral_notice.published_on.strftime('%B %d, %Y')} - #{Rails.configuration.x.app_name}" %>
+<% content_for :description, "Aviso fúnebre de #{@funeral_notice.full_name} publicado el #{@funeral_notice.published_on.strftime('%B %d, %Y')}. #{@funeral_notice.content.truncate(150)}" %>
+<% content_for :canonical_url, funeral_notice_url(@funeral_notice.route_params) %>
+
+<%= render 'structured_data' %>
+
+<div class="max-w-4xl mx-auto px-4 py-8 h-fit">
+  <%= render 'breadcrumb', funeral_notice: @funeral_notice %>
+
+  <div class="mb-6">
+    <%= link_to "← Volver a la búsqueda", funeral_notices_path, class: "text-blue-300 hover:text-white transition" %>
+  </div>
+
+  <%= render 'funeral_notice_card', notice: @funeral_notice, hide_actions: true %>
+</div> 

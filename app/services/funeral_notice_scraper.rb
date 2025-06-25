@@ -1,3 +1,5 @@
+require 'open-uri'
+
 class FuneralNoticeScraper
   BASE_URL = "https://funebres.eldia.com/edis/%{date}/funebres2.htm"
   START_DATE = Date.parse("2006-05-02")
@@ -51,12 +53,13 @@ class FuneralNoticeScraper
     doc.css("div.grid_10.funebres li.c").each do |notice|
       span = notice.at('span')
       content = span&.text&.strip
-      Rails.logger.info "Full Name: #{notice&.text}"
-
+      
       span.remove if span
       full_name = notice.text.strip
 
       next if full_name.blank? || content.blank?
+
+      puts "Found notice: #{full_name} - #{content[0..50]}..."
 
       FuneralNotice.find_or_create_by!(
         full_name: full_name,

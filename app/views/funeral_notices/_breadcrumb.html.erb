@@ -1,0 +1,17 @@
+<nav class="mb-6 text-sm" aria-label="Breadcrumb">
+  <ol class="flex items-center space-x-2">
+    <li>
+      <%= link_to "Inicio", root_path, class: "text-blue-300 hover:text-white transition" %>
+    </li>
+    <li class="text-gray-400">/</li>
+    <li>
+      <%= link_to "Avisos Fúnebres", funeral_notices_path, class: "text-blue-300 hover:text-white transition" %>
+    </li>
+    <% if local_assigns[:funeral_notice] %>
+      <li class="text-gray-400">/</li>
+      <li class="text-white font-medium" aria-current="page">
+        <%= funeral_notice.full_name %>
+      </li>
+    <% end %>
+  </ol>
+</nav> 
