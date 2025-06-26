@@ -1,14 +1,26 @@
 #!/bin/bash -e
 
+# Require SECRET_KEY_BASE for distributed Docker usage
+if [ -z "$SECRET_KEY_BASE" ]; then
+  echo "ERROR: SECRET_KEY_BASE environment variable is required"
+  echo "Please set it to a persistent value, e.g.:"
+  echo "  export SECRET_KEY_BASE=\"\$(openssl rand -hex 64)\""
+  echo "  docker run -e SECRET_KEY_BASE=\"\$SECRET_KEY_BASE\" your-app:latest"
+  exit 1
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
-# Start cron service
-service cron start
-
-# Update crontab with whenever
-bundle exec whenever --update-crontab
+# Start cron service only if we have permission
+if [ -w /var/run ]; then
+  service cron start
+  # Update crontab with whenever
+  bundle exec whenever --update-crontab
+else
+  echo "Warning: Cannot start cron service due to permission restrictions"
+fi
 
 exec "${@}"

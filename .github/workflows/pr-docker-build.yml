@@ -1,10 +1,10 @@
-name: Build and Push Docker Image
+name: Build Docker Image for Pull Request
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - main
-  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -37,13 +37,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=pr-${{ github.event.number }}
             type=sha
 
-      - name: Build and Push Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -58,3 +55,7 @@ jobs:
         run: |
           echo "Built and pushed images with tags:"
           echo "${{ steps.meta.outputs.tags }}"
+          
+          # Extract specific tags for PR
+          echo "PR-${{ github.event.number }} tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
+          echo "Commit hash tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" 
