@@ -37,10 +37,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=pr-${{ github.event.number }},enable={{is_pr}}
-            type=raw,value=${{ github.sha }},enable={{is_pr}}
+            type=raw,value=pr-${{ github.event.number }}
+            type=sha
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
