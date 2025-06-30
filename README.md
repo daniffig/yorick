@@ -106,3 +106,28 @@ bundle exec rake chewy:reset
   ```bash
   bundle exec rake chewy:reset[funeral_notices]
   ```
+
+## Environment Variables
+
+Below are the key environment variables used for both development and production:
+
+| Variable                | Description                                                                 | Example (Development)                                  | Example (Production)                        |
+|-------------------------|-----------------------------------------------------------------------------|--------------------------------------------------------|---------------------------------------------|
+| RAILS_ENV               | Rails environment (development or production)                                | development                                            | production                                  |
+| RAILS_MASTER_KEY        | Master key for encrypted credentials (required in production)                | (leave blank or use dev key)                           | your_rails_master_key                       |
+| DATABASE_URL            | Database connection string                                                  | postgres://postgres:postgres@localhost:5432/myapp_development | postgres://postgres:postgres@db:5432/myapp_production |
+| ELASTICSEARCH_URL       | Elasticsearch endpoint                                                      | http://localhost:9200                                 | http://elasticsearch:9200                  |
+| CHEWY_HOST (optional)   | Chewy/Elasticsearch host override                                           | (not set)                                             | elasticsearch:9200                         |
+| CHEWY_PREFIX (optional) | Chewy index prefix (for namespacing in production)                          | (not set)                                             | yorick_production                          |
+| RAILS_SERVE_STATIC_FILES| Set to true if Rails should serve static files (production, no reverse proxy)| (not set)                                             | true                                       |
+| POSTGRES_USER           | Postgres username (used by db service)                                         | postgres                                                | postgres                                    |
+| POSTGRES_PASSWORD       | Postgres password (used by db service)                                         | postgres                                                | postgres                                    |
+| POSTGRES_DB             | Postgres database name (used by db service)                                    | myapp_development                                       | myapp_production                           |
+| TZ                      | Timezone for database and services                                             | America/Argentina/Buenos_Aires                          | America/Argentina/Buenos_Aires              |
+| ASSUME_SSL              | Set to 'true' to assume SSL is terminated by a proxy (default: false)           | false                                                  | true                                       |
+| FORCE_SSL               | Set to 'true' to force SSL in Rails (default: true)                              | false                                                  | true                                       |
+
+**Note:**
+- For local development, you can set these in a `.env` file or export them in your shell.
+- For Docker Compose production testing, use a `.env` file in the `.production-test` directory.
+- Never commit real secrets (like `RAILS_MASTER_KEY`) to version control.

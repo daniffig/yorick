@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Yorick Funeral Notices - AI Assistant Guidelines
+
+## Project Context
+- Project: Yorick Funeral Notices
+- Tech Stack: Ruby 3.2.8, Rails 7.1.5, PostgreSQL 15, Elasticsearch 8.13, TailwindCSS, Stimulus/Turbo
+- Purpose: A web application to scrape, display, and search funeral notices.
+
+## Development Workflow
+1. Always create feature branches from main following kebab-case naming.
+2. Follow git conventions: type(scope): description.
+3. All code must be tested (Minitest & Capybara, 80% coverage minimum).
+4. Use RuboCop + Prettier for code formatting.
+5. **MUST use `bundle` for Ruby gem management.**
+6. **MUST use `docker compose` (v2) instead of `docker-compose` (v1).**
+
+## Code Standards
+- Follow the Rails framework conventions.
+- Use `tailwindcss-rails` for styling.
+- Use `ViewComponent` for reusable UI components.
+- Implement proper error handling and validation.
+
+## AI Assistant Rules
+- When a new directive is described as permanent, update both prompt_context.yaml and .cursor/rules/ files to maintain consistency.
+- When working on any major codebase change, you must update related documentation as well.
+- **NEVER upgrade or downgrade packages without explicit user authorization - always ask first.**
+- **MUST use `bundle` for all Ruby gem management operations.**
+
+## Excluded Tasks
+- Do not generate legal content.
+- Do not modify database schemas (`db/schema.rb`) without an explicit request or creating a new migration.
+- Never push directly to main/release branches.
