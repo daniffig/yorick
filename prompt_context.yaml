@@ -1,0 +1,87 @@
+# prompt_context.yaml
+
+project:
+  name: "Yorick Funeral Notices"
+  description: "A web application to scrape, display, and search funeral notices."
+  purpose: "To provide a centralized, searchable database of funeral notices."
+
+session_guidelines:
+  purpose: >
+    This file is used to initialize AI assistant sessions with consistent context
+    for development tasks like coding, PR generation, and architectural decisions.
+
+  behavior_rules:
+    - Assume you're collaborating with experienced human developers.
+    - Do not explain basic concepts unless asked.
+    - Use concise commit messages and PR descriptions.
+    - Follow the project's Git and coding conventions.
+    - Always propose a branch name before suggesting code changes.
+    - When a new directive is described as permanent, update both prompt_context.yaml and .cursor/rules/ files to maintain consistency.
+    - When working on any major codebase change, you must update related documentation as well.
+    - NEVER upgrade or downgrade packages without explicit user authorization - always ask first.
+
+workflow:
+  feature_development:
+    steps:
+      - "Sync main and create a new branch from it. This branch should follow branch naming conventions."
+      - "Once the work is wrapped up, push the branch and all of its changes, then create a new PR."
+
+development_conventions:
+  language_stack:
+    - Ruby (3.2.8)
+    - Rails (7.1.5)
+    - PostgreSQL (15)
+    - Elasticsearch (8.13)
+  code_style:
+    ruby: "RuboCop + Prettier"
+    css: "TailwindCSS via tailwindcss-rails"
+  testing:
+    framework: "Minitest & Capybara"
+    rule: "All new code must be covered by tests, minimum 80% coverage"
+  dependencies:
+    backend: "Managed via Gemfile with `bundle`."
+
+git_conventions:
+  branch_naming: >
+    Use kebab-case prefixed by type (e.g., feature/, bugfix/, chore/):
+      - feature/user-authentication
+      - bugfix/api-error-500
+  commit_messages:
+    format: >
+      type(scope): short description
+      Example: feat(notices): add scraper for new source
+  pr_guidelines:
+    - Title must reflect purpose clearly.
+    - Body must mention related issues, link relevant docs.
+    - AI-written code should be marked as such in PR description.
+
+tech_stack:
+  backend: "Ruby 3.2.8, Rails 7.1.5"
+  frontend: "Stimulus/Turbo, ViewComponent"
+  database: "PostgreSQL 15, Elasticsearch 8.13"
+  styling: "TailwindCSS"
+
+development_workflow:
+  - "Always create feature branches from main following kebab-case naming"
+  - "Follow git conventions: type(scope): description"
+  - "All code must be tested (Minitest & Capybara, 80% coverage minimum)"
+  - "Use RuboCop + Prettier for code formatting"
+  - "MUST use `bundle` for all Ruby gem management operations."
+  - "MUST use `docker compose` (v2) instead of `docker-compose` (v1)."
+
+code_standards:
+  - "Follow the Rails framework conventions."
+  - "Use `tailwindcss-rails` for styling."
+  - "Use `ViewComponent` for reusable UI components."
+  - "Implement proper error handling and validation."
+
+ai_assistant_rules:
+  - "When a new directive is described as permanent, update both prompt_context.yaml and .cursor/rules/ files to maintain consistency"
+  - "When working on any major codebase change, you must update related documentation as well"
+  - "NEVER upgrade or downgrade packages without explicit user authorization - always ask first"
+  - "MUST use `bundle` for all Ruby gem management operations."
+
+excluded_tasks:
+  - "Do not generate legal content"
+  - "Do not modify database schemas (`db/schema.rb`) without an explicit request or creating a new migration."
+  - "Never push directly to main or release branches" 
