@@ -1,6 +1,6 @@
 class FuneralNoticesController < ApplicationController
   def index
-    search_query = build_search_query(params)
+    search_query = build_search_query(search_params)
 
     if search_query.present?
       base_scope = FuneralNoticesIndex
@@ -16,7 +16,7 @@ class FuneralNoticesController < ApplicationController
     end
 
     # Set cache headers for index page
-    fresh_when(@funeral_notices.compact, etag: [@funeral_notices, @pagy.page, params.permit(:full_name, :content)])
+    fresh_when(@funeral_notices.compact, etag: [@funeral_notices, @pagy.page, search_params])
   end
 
   def show
@@ -132,5 +132,9 @@ class FuneralNoticesController < ApplicationController
 
       search_query
     end
+  end
+
+  def search_params
+    params.except(:commit).permit(:full_name, :content)
   end
 end

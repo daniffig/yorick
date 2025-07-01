@@ -19,7 +19,6 @@
 1. **Clone the repository and install dependencies:**
    ```bash
    bundle install
-   yarn install # if you use JS dependencies
    ```
 
 2. **Start PostgreSQL and Elasticsearch with Docker Compose:**

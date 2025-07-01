@@ -1,0 +1,11 @@
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a] ActionView::Template::Error (The asset "application.css" is not present in the asset pipeline.
+yorick-web            | ):
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     40:     <%= javascript_importmap_tags %>
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     41: 
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     42:     <!-- Preload critical resources -->
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     43:     <link rel="preload" href="<%= asset_path('application.css') %>" as="style">
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     44:     <link rel="preload" href="<%= asset_path('application.js') %>" as="script">
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     45:     
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]     46:     <!-- DNS prefetch for external resources -->
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a]   
+yorick-web            | [8d35f415-b33b-4bf0-ae43-ac23e4cea11a] app/views/layouts/application.html.erb:43
