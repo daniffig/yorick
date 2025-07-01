@@ -38,10 +38,6 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
     <%= javascript_importmap_tags %>
-
-    <!-- Preload critical resources -->
-    <link rel="preload" href="<%= asset_path('application.css') %>" as="style">
-    <link rel="preload" href="<%= asset_path('application.js') %>" as="script">
     
     <!-- DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
