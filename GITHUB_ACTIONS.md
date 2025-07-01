@@ -53,7 +53,7 @@ docker run -p 3000:3000 \
 ### **Image Tags Generated:**
 ```bash
 # For main branch with commit a1b2c3d4
-ghcr.io/daniffig/yorick:latest
+ghcr.io/daniffig/yorick:latest  # Always added on main branch push
 ghcr.io/daniffig/yorick:main
 ghcr.io/daniffig/yorick:a1b2c3d4
 ghcr.io/daniffig/yorick:main-a1b2c3d4
