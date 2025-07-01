@@ -50,8 +50,9 @@ RUN apt-get update -qq && \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+# Start cron as root before switching to rails user (required for whenever gem and cron jobs)
+RUN service cron start && \
+    useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp && \
     # Fix cron permissions for non-root user
     mkdir -p /var/run && \
