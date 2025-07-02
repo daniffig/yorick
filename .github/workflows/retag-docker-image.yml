@@ -18,6 +18,15 @@ jobs:
       packages: write
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Get PR head SHA (first parent of merge commit)
+        id: pr_head
+        run: |
+          PR_HEAD_SHA=$(git rev-parse HEAD^1)
+          echo "pr_head_sha=$PR_HEAD_SHA" >> $GITHUB_OUTPUT
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -25,14 +34,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull image built by PR workflow (commit SHA)
+      - name: Pull image built by PR workflow (PR head SHA)
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }}
 
       - name: Tag image as 'main' and 'latest'
         run: |
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Push 'main' and 'latest' tags
         run: |
