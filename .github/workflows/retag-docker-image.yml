@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get PR head SHA (first parent of merge commit)
         id: pr_head
