@@ -2,7 +2,7 @@ name: Build Docker Image for Pull Request
 
 on:
   workflow_run:
-    workflows: ["Test and Lint"]
+    workflows: [Test and Lint]
     types: [completed]
 
 env:
