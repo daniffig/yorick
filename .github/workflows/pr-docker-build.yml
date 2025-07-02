@@ -4,8 +4,6 @@ on:
   workflow_run:
     workflows: ["Test and Lint"]
     types: [completed]
-    branches:
-      - main
 
 env:
   REGISTRY: ghcr.io
