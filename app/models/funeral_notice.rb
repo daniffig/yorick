@@ -21,7 +21,7 @@ class FuneralNotice < ApplicationRecord
 
   def generate_hash_id
     return if hash_id.present?
-    
+
     # Create a hash based on date, content, and a random component
     content_to_hash = "#{published_on}#{full_name}#{content}#{SecureRandom.hex(4)}"
     self.hash_id = Digest::SHA256.hexdigest(content_to_hash)[0..5] # 6 characters

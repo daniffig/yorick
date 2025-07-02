@@ -29,13 +29,11 @@ class FuneralNoticesController < ApplicationController
     date = Date.parse(date_str)
 
     # Parse name-hash_id format (e.g., "mariana-santos-f6524f")
-    if name_hash.include?('-')
-      parts = name_hash.split('-')
-      hash_id = parts.last # Last part is the hash
-      name_dasherized = parts[0..-2].join('-') # Everything except last part is the name
-    else
-      raise ActiveRecord::RecordNotFound
-    end
+    raise ActiveRecord::RecordNotFound unless name_hash.include?('-')
+
+    parts = name_hash.split('-')
+    hash_id = parts.last # Last part is the hash
+    name_dasherized = parts[0..-2].join('-') # Everything except last part is the name
 
     @funeral_notice = FuneralNotice.find_by(published_on: date, hash_id: hash_id)
     raise ActiveRecord::RecordNotFound unless @funeral_notice
@@ -72,7 +70,7 @@ class FuneralNoticesController < ApplicationController
             match: {
               full_name: {
                 query: query,
-                operator: "and",
+                operator: 'and',
                 boost: 5
               }
             }
@@ -83,7 +81,7 @@ class FuneralNoticesController < ApplicationController
                 query: query,
                 fuzziness: 1,
                 prefix_length: 2,
-                max_expansions: 10,
+                max_expansions: 10
               }
             }
           }
@@ -111,7 +109,7 @@ class FuneralNoticesController < ApplicationController
             match: {
               content: {
                 query: query,
-                operator: "and",
+                operator: 'and',
                 boost: 1
               }
             }
@@ -125,13 +123,13 @@ class FuneralNoticesController < ApplicationController
     full_name_query = params[:full_name].to_s.strip
     content_query = params[:content].to_s.strip
 
-    if [full_name_query, content_query].any?
-      search_query = []
-      search_query << build_full_name_query(full_name_query) if full_name_query.present?
-      search_query << build_content_query(content_query) if content_query.present?
+    return unless [full_name_query, content_query].any?
 
-      search_query
-    end
+    search_query = []
+    search_query << build_full_name_query(full_name_query) if full_name_query.present?
+    search_query << build_content_query(content_query) if content_query.present?
+
+    search_query
   end
 
   def search_params

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "🔒 Setting up Git hooks to prevent direct pushes to main..."
+
+# Create .git/hooks/pre-push
+cat > .git/hooks/pre-push << 'EOF'
+#!/bin/bash
+branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+if [ "$branch" = "main" ]; then
+  echo "❌ Direct pushes to main are not allowed!"
+  echo "Please create a feature branch and submit a pull request."
+  echo ""
+  echo "Example workflow:"
+  echo "  git checkout -b feature/your-feature-name"
+  echo "  # make your changes"
+  echo "  git add . && git commit -m 'feat: your changes'"
+  echo "  git push origin feature/your-feature-name"
+  echo "  # then create a PR on GitHub"
+  exit 1
+fi
+EOF
+
+chmod +x .git/hooks/pre-push
+
+echo "✅ Git pre-push hook installed successfully!"
+echo "   This will prevent accidental pushes to the main branch."
+echo ""
+echo "📝 Remember: All changes must go through Pull Requests!" 

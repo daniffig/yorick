@@ -1,8 +1,8 @@
 module ApplicationHelper
   def highlight_text(text, query)
-    return text unless query.present?
+    return text if query.blank?
 
-    query = Regexp.escape(query)  # Escape any special characters in the search query
+    query = Regexp.escape(query) # Escape any special characters in the search query
     highlighted = text.gsub(/(#{query})/i) { |match| "<span class='bg-yellow-300'>#{match}</span>" }
     highlighted.html_safe
   end

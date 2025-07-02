@@ -5,9 +5,11 @@ one:
   content: MyText
   published_on: 2025-04-10
   source_link: MyString
+  hash_id: abc123
 
 two:
   full_name: MyString
   content: MyText
   published_on: 2025-04-10
   source_link: MyString
+  hash_id: def456

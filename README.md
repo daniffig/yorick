@@ -1,5 +1,13 @@
 # Yorick Funeral Notices
 
+## ⚠️ **IMPORTANT: Development Workflow**
+- **NEVER push directly to main branch** - This is strictly forbidden
+- **ALL changes must go through Pull Requests**
+- **PRs must pass both tests AND linting before merging**
+- **No exceptions to this workflow**
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for complete workflow details.
+
 ## App Technology Stack
 
 - **Ruby**: 3.2.8
@@ -69,14 +77,21 @@
 
 ## Rake Tasks
 
-### 1. Run a First Scrape
+### 1. Run a Scrape or Recovery (with recovery_mode)
 
-Scrape funeral notices for a date range (defaults to all available dates):
+Scrape or recover funeral notices between a start_date and end_date (format: YYYY-MM-DD). Set recovery_mode=true to run in recovery mode.
 
+Usage:
 ```bash
-rake funeral_notices:scrape start_date=YYYY-MM-DD end_date=YYYY-MM-DD
+rake funeral_notices:scrape [start_date=YYYY-MM-DD end_date=YYYY-MM-DD recovery_mode=true|false]
 ```
 - Example: `rake funeral_notices:scrape start_date=2024-01-01 end_date=2024-01-31`
+- To recover missing funeral notices (e.g., due to errors or partial saves), set `recovery_mode=true`:
+  ```bash
+  recovery_mode=true rake funeral_notices:scrape start_date=2006-05-02 end_date=2024-01-31
+  ```
+- If no dates are provided, it will run from the very first date to today.
+- In recovery mode, the task will only add notices whose text content is not already present for a given date, avoiding duplicates.
 
 ### 2. Run a Daily Scrape with Cron
 

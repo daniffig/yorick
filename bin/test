@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "🧪 Running test suite..."
+bundle exec rails test
+
+echo "✅ All tests passed!" 

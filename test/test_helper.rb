@@ -1,6 +1,9 @@
-ENV["RAILS_ENV"] ||= "test"
-require_relative "../config/environment"
-require "rails/test_help"
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+require 'rails/test_help'
+
+# Disable Chewy (Elasticsearch) in test environment
+Chewy.strategy(:bypass)
 
 module ActiveSupport
   class TestCase

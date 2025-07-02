@@ -7,9 +7,7 @@ class PaginationComponent < ViewComponent::Base
     @pagy = pagy
   end
 
-  def series
-    @pagy.series
-  end
+  delegate :series, to: :@pagy
 
   def params_to_keep
     request.query_parameters.slice(:full_name, :content)

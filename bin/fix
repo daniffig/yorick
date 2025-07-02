@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "🔧 Running RuboCop auto-fix..."
+bundle exec rubocop -a
+
+echo "✅ All formatting fixes applied!" 
