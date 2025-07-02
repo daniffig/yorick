@@ -7,7 +7,7 @@ class FuneralNoticesController < ApplicationController
                               end
 
     # Set cache headers for index page
-    fresh_when(@funeral_notices.compact, etag: [@funeral_notices, @pagy.page, search_params])
+    fresh_when(@funeral_notices.first, etag: [@funeral_notices, @pagy.page, search_params])
   end
 
   # rubocop:disable Metrics/AbcSize
@@ -96,11 +96,14 @@ class FuneralNoticesController < ApplicationController
     search_query = build_search_query(search_params)
     return pagy(FuneralNotice.order(published_on: :desc)) if search_query.empty?
 
-    results = FuneralNotice.search(search_query)
-    pagy_array(results.to_a)
+    results = FuneralNoticesIndex.query(search_query).load
+    ids = results.map(&:id)
+    notices = FuneralNotice.where(id: ids).index_by(&:id)
+    ordered_notices = ids.filter_map { |id| notices[id.to_i] }
+    pagy_array(ordered_notices)
   end
 
   def search_params
-    params.permit(:full_name, :content)
+    params.except(:commit).permit(:full_name, :content)
   end
 end
