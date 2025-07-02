@@ -65,15 +65,9 @@ jobs:
       - name: Run RuboCop
         run: bundle exec rubocop
 
-      - name: Check test coverage
+      - name: Test Summary
         run: |
-          echo "Test coverage report:"
-          echo "Total tests: $(bundle exec rails test --verbose | grep -c 'test_')"
-          echo "All tests passed successfully!"
-
-      - name: Summary
-        run: |
-          echo "✅ All checks passed!"
+          echo "✅ All quality checks passed!"
           echo "✅ Tests: PASSED"
           echo "✅ Linting: PASSED"
-          echo "✅ Ready for merge (no review required)" 
+          echo "✅ Ready for Docker build" 

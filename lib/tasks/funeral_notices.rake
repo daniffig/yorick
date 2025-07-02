@@ -1,5 +1,9 @@
+START_DATE = Date.parse('2006-05-02')
+
+# rubocop:disable Metrics/BlockLength
 namespace :funeral_notices do
-  desc 'Scrape or recover funeral notices between a start_date and end_date (format: YYYY-MM-DD). Set recovery_mode=true to run in recovery mode.'
+  desc 'Scrape or recover funeral notices between a start_date and end_date (format: YYYY-MM-DD). ' \
+       'Set recovery_mode=true to run in recovery mode.'
   task scrape: :environment do
     puts 'Usage: rake funeral_notices:scrape [start_date=YYYY-MM-DD end_date=YYYY-MM-DD recovery_mode=true|false]'
 
@@ -7,7 +11,6 @@ namespace :funeral_notices do
     end_date_str   = ENV.fetch('end_date', nil)
     recovery_mode  = ENV['recovery_mode'] == 'true'
 
-    START_DATE = Date.parse('2006-05-02')
     today = Time.zone.today
 
     begin
@@ -40,3 +43,4 @@ namespace :funeral_notices do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

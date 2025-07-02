@@ -238,11 +238,13 @@ docker compose up -d --build
    - Runs on: Pull Requests only
    - Tests: Ruby tests, RuboCop
    - Services: PostgreSQL, Elasticsearch
+   - **Must pass before Docker build runs**
 
 2. **PR Docker Build** (`.github/workflows/pr-docker-build.yml`)
-   - Runs on: Pull Requests
+   - Runs on: After Test and Lint workflow completes successfully
    - Builds: Docker image for testing
-   - Tags: `pr-{number}`, `{commit-hash}`
+   - Tags: `pr-{branch}`, `{commit-hash}`
+   - **Only runs if tests and linting pass**
 
 3. **Main Docker Build** (`.github/workflows/docker-build.yml`)
    - Runs on: Push to main

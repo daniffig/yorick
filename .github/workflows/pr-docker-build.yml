@@ -1,8 +1,9 @@
 name: Build Docker Image for Pull Request
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["Test and Lint"]
+    types: [completed]
     branches:
       - main
 
@@ -16,6 +17,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+
+    # Only run if the triggering workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
@@ -37,7 +41,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=pr-${{ github.event.number }}
+            type=raw,value=pr-${{ github.event.workflow_run.head_branch }}
             type=sha
 
       - name: Build and push Docker image
@@ -53,9 +57,10 @@ jobs:
 
       - name: Output image tags
         run: |
+          echo "✅ Docker image built successfully after tests passed!"
           echo "Built and pushed images with tags:"
           echo "${{ steps.meta.outputs.tags }}"
           
           # Extract specific tags for PR
-          echo "PR-${{ github.event.number }} tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
+          echo "PR tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.workflow_run.head_branch }}"
           echo "Commit hash tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" 

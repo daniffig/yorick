@@ -1,29 +1,20 @@
 class FuneralNoticesController < ApplicationController
   def index
-    search_query = build_search_query(search_params)
-
-    if search_query.present?
-      base_scope = FuneralNoticesIndex
-        .query(bool: { must: search_query })
-        .order(published_on: :desc, id: :desc)
-
-      total_count = base_scope.total_count
-
-      @pagy = Pagy.new(count: total_count, page: params[:page] || 1)
-      @funeral_notices = base_scope.offset(@pagy.offset).limit(@pagy.limit).records
-    else
-      @pagy, @funeral_notices = pagy(FuneralNotice.order(published_on: :desc, id: :desc))
-    end
+    @pagy, @funeral_notices = if params[:full_name].present? || params[:content].present?
+                                search_funeral_notices
+                              else
+                                pagy(FuneralNotice.order(published_on: :desc))
+                              end
 
     # Set cache headers for index page
     fresh_when(@funeral_notices.compact, etag: [@funeral_notices, @pagy.page, search_params])
   end
 
+  # rubocop:disable Metrics/AbcSize
   def show
     date_str = params[:date]
     name_hash = params[:name_hash]
 
-    # Validate we have both parameters
     raise ActiveRecord::RecordNotFound if date_str.blank? || name_hash.blank?
 
     date = Date.parse(date_str)
@@ -33,106 +24,83 @@ class FuneralNoticesController < ApplicationController
 
     parts = name_hash.split('-')
     hash_id = parts.last # Last part is the hash
-    name_dasherized = parts[0..-2].join('-') # Everything except last part is the name
 
-    @funeral_notice = FuneralNotice.find_by(published_on: date, hash_id: hash_id)
-    raise ActiveRecord::RecordNotFound unless @funeral_notice
+    @funeral_notice = FuneralNotice.find_by!(
+      published_on: date,
+      hash_id: hash_id
+    )
 
-    # Verify the name matches (additional security check)
-    expected_name = @funeral_notice.full_name.parameterize
-    unless name_dasherized == expected_name
-      redirect_to funeral_notice_path(@funeral_notice.route_params), status: :moved_permanently
+    # Redirect if the name-hash doesn't match the canonical route
+    expected_name_hash = "#{@funeral_notice.full_name.parameterize}-#{@funeral_notice.hash_id}"
+    unless name_hash.downcase == expected_name_hash.downcase
+      redirect_to funeral_notice_path(@funeral_notice.route_params), status: :moved_permanently and return
     end
 
-    # Set cache headers for show page
     fresh_when(@funeral_notice, etag: @funeral_notice)
     Rails.logger.info "Found funeral notice: #{@funeral_notice.full_name} (ID: #{@funeral_notice.id})"
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 
   def build_full_name_query(query)
-    return if query.blank?
-
     {
-      bool: {
-        should: [
-          {
-            match_phrase: {
-              full_name: {
-                query: query,
-                slop: 2,
-                boost: 10
-              }
-            }
-          },
-          {
-            match: {
-              full_name: {
-                query: query,
-                operator: 'and',
-                boost: 5
-              }
-            }
-          },
-          {
-            match: {
-              full_name: {
-                query: query,
-                fuzziness: 1,
-                prefix_length: 2,
-                max_expansions: 10
-              }
-            }
-          }
-        ]
+      multi_match: {
+        query: query,
+        fields: ['full_name^3', 'full_name._2gram^2', 'full_name._3gram'],
+        type: 'best_fields',
+        fuzziness: 'AUTO',
+        operator: 'and',
+        minimum_should_match: '75%',
+        boost: 2.0,
+        tie_breaker: 0.3,
+        max_expansions: 10
       }
     }
   end
 
   def build_content_query(query)
-    return if query.blank?
-
     {
-      bool: {
-        should: [
-          {
-            match_phrase: {
-              content: {
-                query: query,
-                slop: 3,
-                boost: 3
-              }
-            }
-          },
-          {
-            match: {
-              content: {
-                query: query,
-                operator: 'and',
-                boost: 1
-              }
-            }
-          }
-        ]
+      multi_match: {
+        query: query,
+        fields: ['content^2', 'content._2gram', 'content._3gram'],
+        type: 'best_fields',
+        fuzziness: 'AUTO',
+        operator: 'and',
+        minimum_should_match: '50%',
+        boost: 1.0,
+        tie_breaker: 0.3,
+        max_expansions: 10
       }
     }
   end
 
   def build_search_query(params)
-    full_name_query = params[:full_name].to_s.strip
-    content_query = params[:content].to_s.strip
+    return {} if params.blank?
 
-    return unless [full_name_query, content_query].any?
+    queries = []
+    queries << build_full_name_query(params[:full_name]) if params[:full_name].present?
+    queries << build_content_query(params[:content]) if params[:content].present?
 
-    search_query = []
-    search_query << build_full_name_query(full_name_query) if full_name_query.present?
-    search_query << build_content_query(content_query) if content_query.present?
+    return {} if queries.empty?
 
-    search_query
+    {
+      bool: {
+        should: queries,
+        minimum_should_match: 1
+      }
+    }
+  end
+
+  def search_funeral_notices
+    search_query = build_search_query(search_params)
+    return pagy(FuneralNotice.order(published_on: :desc)) if search_query.empty?
+
+    results = FuneralNotice.search(search_query)
+    pagy_array(results.to_a)
   end
 
   def search_params
-    params.except(:commit).permit(:full_name, :content)
+    params.permit(:full_name, :content)
   end
 end

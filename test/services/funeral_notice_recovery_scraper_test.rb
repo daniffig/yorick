@@ -26,8 +26,8 @@ class FuneralNoticeRecoveryScraperTest < ActiveSupport::TestCase
 
     notice = FuneralNotice.last
     assert_equal 'JOHN DOE', notice.full_name
-    assert_equal '(Q.E.P.D.) Falleció el 30/06/2025.- Su esposa: Jane Doe; sus hijos: John Jr. y Jane Jr. participan su fallecimiento.',
-                 notice.content
+    assert_equal '(Q.E.P.D.) Falleció el 30/06/2025.- Su esposa: Jane Doe; sus hijos: John Jr. y Jane Jr. ' \
+                 'participan su fallecimiento.', notice.content
     assert_equal @date, notice.published_on
 
     # Restore original method
@@ -38,7 +38,8 @@ class FuneralNoticeRecoveryScraperTest < ActiveSupport::TestCase
     # Create an existing notice
     FuneralNotice.create!(
       full_name: 'JOHN DOE',
-      content: '(Q.E.P.D.) Falleció el 30/06/2025.- Su esposa: Jane Doe; sus hijos: John Jr. y Jane Jr. participan su fallecimiento.',
+      content: '(Q.E.P.D.) Falleció el 30/06/2025.- Su esposa: Jane Doe; sus hijos: John Jr. y Jane Jr. ' \
+               'participan su fallecimiento.',
       published_on: @date,
       source_link: @url
     )

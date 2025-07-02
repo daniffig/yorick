@@ -21,7 +21,9 @@ class FuneralNoticeRecoveryScraper
     Rails.logger.debug { "📅 Recovery scraping #{@date} from #{url}" }
 
     begin
+      # rubocop:disable Security/Open
       html = URI.open(url).read
+      # rubocop:enable Security/Open
       doc = Nokogiri::HTML(html)
       recover_notices(doc, @date, url)
     rescue StandardError => e
@@ -38,7 +40,9 @@ class FuneralNoticeRecoveryScraper
   end
 
   def url_available?(url)
+    # rubocop:disable Security/Open
     URI.open(url) { true }
+    # rubocop:enable Security/Open
   rescue OpenURI::HTTPError => e
     Rails.logger.info "URL not found: #{url} (#{e.message})"
     false
