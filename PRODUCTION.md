@@ -29,6 +29,8 @@ nano .env
 - `POSTGRES_PASSWORD`: Strong database password
 - `POSTGRES_DB`: Database name (default: yorick)
 - `POSTGRES_USER`: Database user (default: yorick)
+- `CHEWY_HOST`: Set to `elasticsearch:9200` for production
+- `CHEWY_PREFIX`: Set to `yorick_production` for production
 
 ### 3. Deploy with Docker Compose
 
@@ -42,6 +44,12 @@ docker-compose -f docker-compose.prod.yml ps
 # View logs
 docker-compose -f docker-compose.prod.yml logs -f web
 ```
+
+**Note:** The production Docker Compose configuration includes:
+- DNS configuration for reliable network connectivity
+- Elasticsearch security settings disabled for single-node deployment
+- Health checks for all services
+- Proper volume management for data persistence
 
 ## 📋 Services Overview
 
@@ -61,7 +69,8 @@ docker-compose -f docker-compose.prod.yml logs -f web
 - **Version**: 8.13.4
 - **Port**: Internal only (9200)
 - **Health Check**: Cluster health
-- **Memory**: 512MB (configurable)
+- **Memory**: 512MB (configurable via ES_JAVA_OPTS)
+- **Security**: X-Pack security disabled for single-node deployment
 - **Volume**: Persistent data storage
 
 ## 🔧 Configuration Options
@@ -72,6 +81,8 @@ docker-compose -f docker-compose.prod.yml logs -f web
 ```bash
 SECRET_KEY_BASE=your_64_character_secret
 POSTGRES_PASSWORD=your_secure_password
+CHEWY_HOST=elasticsearch:9200
+CHEWY_PREFIX=yorick_production
 ```
 
 #### Optional
@@ -84,7 +95,13 @@ RAILS_MAX_THREADS=5
 RAILS_LOG_LEVEL=info
 
 # SSL
-DISABLE_SSL=false
+FORCE_SSL=true
+
+# Static files
+RAILS_SERVE_STATIC_FILES=true
+
+# Google Search Console (optional)
+GOOGLE_SITE_VERIFICATION=your_verification_code
 ```
 
 ### Volume Management
