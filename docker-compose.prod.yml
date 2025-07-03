@@ -1,6 +1,6 @@
 services:
   web:
-    image: yorick:latest
+    image: ghcr.io/dvorak-dev/yorick:pr-fix-deprecation-warning
     container_name: yorick-web
     restart: unless-stopped
     ports:
@@ -21,6 +21,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
 
   db:
     image: postgres:15-alpine
@@ -47,6 +50,8 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
