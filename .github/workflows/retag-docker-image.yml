@@ -20,12 +20,23 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to access parent commits
 
-      - name: Get PR head SHA (first parent of merge commit)
-        id: pr_head
+      - name: Get commit SHA for retagging
+        id: commit_sha
         run: |
-          PR_HEAD_SHA=$(git rev-parse HEAD^1)
-          echo "pr_head_sha=$PR_HEAD_SHA" >> $GITHUB_OUTPUT
+          # For squash merges, use the current commit SHA
+          # For regular merges, use the first parent (PR head)
+          if git rev-parse HEAD^1 >/dev/null 2>&1; then
+            # Regular merge - get the PR head SHA
+            COMMIT_SHA=$(git rev-parse HEAD^1)
+          else
+            # Squash merge or single commit - use current SHA
+            COMMIT_SHA=$(git rev-parse HEAD)
+          fi
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "Using commit SHA: $COMMIT_SHA"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -34,14 +45,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull image built by PR workflow (PR head SHA)
+      - name: Pull image built by PR workflow
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }}
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.commit_sha.outputs.commit_sha }}
 
       - name: Tag image as 'main' and 'latest'
         run: |
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_head.outputs.pr_head_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.commit_sha.outputs.commit_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.commit_sha.outputs.commit_sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Push 'main' and 'latest' tags
         run: |
@@ -51,3 +62,4 @@ jobs:
       - name: Output image tags
         run: |
           echo "Retagged and pushed images with tags: main, latest"
+          echo "Source commit SHA: ${{ steps.commit_sha.outputs.commit_sha }}"
