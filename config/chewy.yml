@@ -5,7 +5,7 @@ development:
   host: 'localhost:9200'
 
 test:
-  host: 'localhost:9250'
+  host: 'localhost:9200'
   prefix: 'test'
 
 production:

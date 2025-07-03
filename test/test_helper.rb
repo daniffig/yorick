@@ -5,6 +5,9 @@ require 'rails/test_help'
 # Disable Chewy (Elasticsearch) in test environment
 Chewy.strategy(:bypass)
 
+# Suppress specific deprecation warnings for Rails 7.2 compatibility
+ActiveSupport::Deprecation.behavior = :silence
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
