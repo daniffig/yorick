@@ -1,4 +1,4 @@
-# Logo Setup Guide for Yorick Funeral Notices
+# Logo Setup Guide for Funebres en La Plata
 
 This guide explains how to add your PNG logo as a favicon and for social media embeds.
 
@@ -98,8 +98,8 @@ The layout already includes social media meta tags. Update the image paths:
 Create `app/assets/images/site.webmanifest`:
 ```json
 {
-  "name": "Yorick Funeral Notices",
-  "short_name": "Yorick",
+  "name": "Funebres en La Plata",
+  "short_name": "Funebres",
   "description": "Buscador de avisos fúnebres en La Plata",
   "icons": [
     {
@@ -191,4 +191,4 @@ curl -I http://localhost:3000
 5. Test thoroughly
 6. Commit and deploy
 
-This setup will give you a complete favicon and social media image solution for your Yorick Funeral Notices application. 
+This setup will give you a complete favicon and social media image solution for your Funebres en La Plata application. 

@@ -1,4 +1,4 @@
-# Yorick Funeral Notices
+# Funebres en La Plata
 
 ## ⚠️ **IMPORTANT: Development Workflow**
 - **NEVER push directly to main branch** - This is strictly forbidden
