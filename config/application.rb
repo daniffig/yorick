@@ -24,6 +24,11 @@ module App
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Configure Chewy strategy for index updates
+    config.after_initialize do
+      Chewy.strategy(:atomic)
+    end
+
     config.x.app_name = "Buscar Avisos Fúnebres en La Plata"
   end
 end

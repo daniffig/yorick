@@ -2,7 +2,7 @@ class FuneralNotice < ApplicationRecord
   validates :full_name, :content, :published_on, :source_link, presence: true
   validates :hash_id, presence: true, uniqueness: true, if: :persisted?
 
-  update_index 'funeral_notices'
+  update_index('funeral_notices') { self }
 
   before_validation :generate_hash_id, on: :create
 
