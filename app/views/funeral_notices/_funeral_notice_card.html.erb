@@ -3,7 +3,7 @@
     <h2 class="text-xl font-semibold text-[#0f172a]">
       <%= link_to (local_assigns[:highlighted_fields] ? highlighted_fields[:full_name].html_safe : notice.full_name), funeral_notice_path(notice.route_params), class: "hover:text-[#312e81] transition" %>
     </h2>
-    <p class="text-sm text-gray-500 mb-2"><%= notice.published_on.strftime('%B %d, %Y') %></p>
+    <p class="text-sm text-gray-500 mb-2"><%= format_published_date(notice.published_on) %></p>
     <p class="text-gray-700 mb-4"><%= local_assigns[:highlighted_fields] ? highlighted_fields[:content].html_safe : notice.content %></p>
     
     <% if local_assigns[:hide_actions] %>
@@ -16,7 +16,7 @@
       <% end %>
     <% else %>
       <div class="flex gap-4">
-        <%= link_to "Ver detalles", funeral_notice_path(notice.route_params), class: "text-sm text-[#312e81] hover:text-[#0f172a] font-medium" %>
+        <%= link_to "Ver detalles", funeral_notice_path(notice.route_params), class: "text-sm text-[#312e81] hover:text-[#0f172a]" %>
         <% if notice.source_link.present? %>
           <a href="<%= notice.source_link %>" target="_blank" class="text-sm text-[#312e81] hover:text-[#0f172a]">Ver en el diario</a>
         <% end %>

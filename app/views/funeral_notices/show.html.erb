@@ -1,5 +1,5 @@
-<% content_for :title, "#{@funeral_notice.full_name} - #{@funeral_notice.published_on.strftime('%B %d, %Y')} - #{Rails.configuration.x.app_name}" %>
-<% content_for :description, "Aviso fúnebre de #{@funeral_notice.full_name} publicado el #{@funeral_notice.published_on.strftime('%B %d, %Y')}. #{@funeral_notice.content.truncate(150)}" %>
+<% content_for :title, "#{@funeral_notice.full_name} - #{format_published_date(@funeral_notice.published_on)} - #{Rails.configuration.x.app_name}" %>
+<% content_for :description, "Aviso fúnebre de #{@funeral_notice.full_name} #{format_published_date(@funeral_notice.published_on).downcase}. #{@funeral_notice.content.truncate(150)}" %>
 <% content_for :canonical_url, funeral_notice_url(@funeral_notice.route_params) %>
 
 <%= render 'structured_data' %>
