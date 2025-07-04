@@ -1,10 +1,8 @@
 name: Retag and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  pull_request:
+    types: [closed]
 
 env:
   REGISTRY: ghcr.io
@@ -12,6 +10,7 @@ env:
 
 jobs:
   retag:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,22 +20,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history to access parent commits
+          fetch-depth: 0
 
-      - name: Get commit SHA for retagging
-        id: commit_sha
+      - name: Determine PR number and commit SHA
+        id: pr_info
         run: |
-          # For squash merges, use the current commit SHA
-          # For regular merges, use the first parent (PR head)
-          if git rev-parse HEAD^1 >/dev/null 2>&1; then
-            # Regular merge - get the PR head SHA
-            COMMIT_SHA=$(git rev-parse HEAD^1)
-          else
-            # Squash merge or single commit - use current SHA
-            COMMIT_SHA=$(git rev-parse HEAD)
-          fi
-          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
-          echo "Using commit SHA: $COMMIT_SHA"
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "commit_sha=${{ github.event.pull_request.merge_commit_sha }}" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -45,86 +35,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Try to pull image with commit SHA
+      - name: Try to pull image by commit SHA
         id: pull_commit
         run: |
-          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.commit_sha.outputs.commit_sha }}; then
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_info.outputs.commit_sha }}; then
             echo "success=true" >> $GITHUB_OUTPUT
-            echo "Found image with commit SHA: ${{ steps.commit_sha.outputs.commit_sha }}"
+            echo "source_tag=${{ steps.pr_info.outputs.commit_sha }}" >> $GITHUB_OUTPUT
           else
             echo "success=false" >> $GITHUB_OUTPUT
-            echo "Image not found with commit SHA: ${{ steps.commit_sha.outputs.commit_sha }}"
           fi
 
-      - name: Try to pull image with PR tag as fallback
+      - name: Try to pull image by PR tag as fallback
         id: pull_pr
-        if: steps.pull_commit.outputs.success == 'false'
+        if: steps.pull_commit.outputs.success != 'true'
         run: |
-          # Try to find the most recent PR image
-          PR_TAG=$(docker images ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --format "table {{.Tag}}" | grep "pr-" | head -1 || echo "")
-          if [ -n "$PR_TAG" ]; then
-            if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$PR_TAG; then
-              echo "success=true" >> $GITHUB_OUTPUT
-              echo "pr_tag=$PR_TAG" >> $GITHUB_OUTPUT
-              echo "Found image with PR tag: $PR_TAG"
-            else
-              echo "success=false" >> $GITHUB_OUTPUT
-              echo "Failed to pull image with PR tag: $PR_TAG"
-            fi
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ steps.pr_info.outputs.pr_number }}; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "source_tag=pr-${{ steps.pr_info.outputs.pr_number }}" >> $GITHUB_OUTPUT
           else
             echo "success=false" >> $GITHUB_OUTPUT
-            echo "No PR tags found"
           fi
 
-      - name: Build new image if none found
-        id: build_new
-        if: steps.pull_commit.outputs.success == 'false' && steps.pull_pr.outputs.success == 'false'
+      - name: Fail if no image found
+        if: steps.pull_commit.outputs.success != 'true' && steps.pull_pr.outputs.success != 'true'
         run: |
-          echo "No existing image found, building new one..."
-          echo "success=true" >> $GITHUB_OUTPUT
-          echo "Building new image with current commit SHA: ${{ github.sha }}"
+          echo "❌ No image found for commit or PR. Aborting."
+          exit 1
 
-      - name: Set up Docker Buildx (if building new)
-        if: steps.build_new.outputs.success == 'true'
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build new Docker image (if needed)
-        if: steps.build_new.outputs.success == 'true'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Tag image as 'main' and 'latest'
+      - name: Tag and push as main/latest
         run: |
-          if [ "${{ steps.pull_commit.outputs.success }}" == "true" ]; then
-            SOURCE_TAG="${{ steps.commit_sha.outputs.commit_sha }}"
-          elif [ "${{ steps.pull_pr.outputs.success }}" == "true" ]; then
-            SOURCE_TAG="${{ steps.pull_pr.outputs.pr_tag }}"
-          else
-            SOURCE_TAG="${{ github.sha }}"
-          fi
-          
-          echo "Tagging from source: $SOURCE_TAG"
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$SOURCE_TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$SOURCE_TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Push 'main' and 'latest' tags
-        run: |
+          TAG="${{ steps.pull_commit.outputs.source_tag || steps.pull_pr.outputs.source_tag }}"
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Output image tags
-        run: |
-          echo "Retagged and pushed images with tags: main, latest"
-          if [ "${{ steps.pull_commit.outputs.success }}" == "true" ]; then
-            echo "Source commit SHA: ${{ steps.commit_sha.outputs.commit_sha }}"
-          elif [ "${{ steps.pull_pr.outputs.success }}" == "true" ]; then
-            echo "Source PR tag: ${{ steps.pull_pr.outputs.pr_tag }}"
-          else
-            echo "Source: Newly built image with SHA: ${{ github.sha }}"
-          fi
