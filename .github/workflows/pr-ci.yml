@@ -95,7 +95,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=pr-${{ github.head_ref || github.ref_name }}
+            type=raw,value=pr-${{ github.event.number }}
             type=sha
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
@@ -111,5 +111,5 @@ jobs:
         run: |
           echo "✅ Docker image built and pushed!"
           echo "Tags: ${{ steps.meta.outputs.tags }}"
-          echo "PR tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.head_ref || github.ref_name }}"
+          echo "PR tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
           echo "Commit hash tag: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" 
