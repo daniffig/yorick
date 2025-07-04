@@ -121,6 +121,45 @@ bundle exec rake chewy:reset
   bundle exec rake chewy:reset[funeral_notices]
   ```
 
+### 4. Generate Sitemap
+
+Generate the sitemap and optionally submit to Google Search Console:
+
+```bash
+# Generate sitemap only
+bundle exec rake sitemap:generate
+
+# Submit existing sitemap to Google Search Console
+bundle exec rake sitemap:submit_to_google
+```
+
+**Note:** For automatic Google Search Console submission, set these environment variables:
+- `GOOGLE_SEARCH_CONSOLE_SITE_URL`: Your site URL (e.g., https://funebres.enlaplata.com.ar)
+- `GOOGLE_SEARCH_CONSOLE_CREDENTIALS`: Path to your Google API credentials JSON file
+
+### 5. Scheduled Tasks
+
+The app uses the [whenever](https://github.com/javan/whenever) gem to schedule daily tasks.  
+See `config/schedule.rb` for the cron job definitions:
+
+- **Daily scraping** at 12:00 PM:
+  ```
+  every 1.day, at: '12:00 pm' do
+    rake "funeral_notices:scrape"
+  end
+  ```
+- **Daily sitemap generation** at 1:00 PM (after scraping):
+  ```
+  every 1.day, at: '1:00 pm' do
+    rake "sitemap:generate"
+  end
+  ```
+
+To update your crontab:
+```bash
+whenever --update-crontab
+```
+
 ## Environment Variables
 
 Below are the key environment variables used for both development and production:
@@ -142,6 +181,8 @@ Below are the key environment variables used for both development and production
 | POSTGRES_DB             | Postgres database name (used by db service)                                  | myapp_development                                       | myapp_production                           |
 | TZ                      | Timezone for database and services                                           | America/Argentina/Buenos_Aires                          | America/Argentina/Buenos_Aires              |
 | GOOGLE_SITE_VERIFICATION| Google Search Console verification code (optional)                           | (not set)                                             | your_verification_code                      |
+| GOOGLE_SEARCH_CONSOLE_SITE_URL| Google Search Console site URL for sitemap submission (optional)              | (not set)                                             | https://funebres.enlaplata.com.ar           |
+| GOOGLE_SEARCH_CONSOLE_CREDENTIALS| Path to Google API credentials JSON file (optional)                          | (not set)                                             | /path/to/credentials.json                   |
 
 **Note:**
 - For local development, you can set these in a `.env` file or export them in your shell.
