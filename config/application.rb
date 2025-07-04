@@ -29,6 +29,6 @@ module App
       Chewy.strategy(:atomic)
     end
 
-    config.x.app_name = "Buscar Avisos Fúnebres en La Plata"
+    config.x.app_name = "Funebres en La Plata"
   end
 end

@@ -106,6 +106,6 @@ class FuneralNoticesControllerTest < ActionDispatch::IntegrationTest
 
     get funeral_notice_path(date: date_str, name_hash: name_hash)
     assert_response :success
-    assert_select 'p', /January 01, 2024/
+    assert_select 'p', /Publicado el 1 de enero de 2024/
   end
 end

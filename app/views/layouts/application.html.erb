@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="<%= asset_path('favicon.ico') %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= asset_path('favicon-16x16.png') %>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= asset_path('favicon-32x32.png') %>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= asset_path('apple-touch-icon.png') %>">
+    <link rel="manifest" href="<%= asset_path('site.webmanifest') %>">
     
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="<%= ENV['GOOGLE_SITE_VERIFICATION'] %>" />
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>">
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata desde 2006. Consulta histórica de obituarios del Diario El Día para investigadores, genealogistas y reconstrucción familiar.' %>">
     <meta name="robots" content="index, follow">
+    <meta name="language" content="es-AR">
+    <meta name="geo.region" content="AR-B">
+    <meta name="geo.placename" content="La Plata, Buenos Aires, Argentina">
+    <meta name="geo.position" content="-34.9215;-57.9545">
+    <meta name="ICBM" content="-34.9215, -57.9545">
     <link rel="canonical" href="<%= content_for?(:canonical_url) ? yield(:canonical_url) : request.original_url %>" />
     
     <!-- Pagination Meta Tags -->
@@ -22,15 +34,19 @@
     
     <!-- Social Media Meta Tags (Open Graph & Twitter Card) -->
     <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %>" />
-    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>" />
+    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata desde 2006. Consulta histórica de obituarios del Diario El Día para investigadores, genealogistas y reconstrucción familiar.' %>" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= request.original_url %>" />
-    <meta property="og:image" content="<%= asset_path('social-share.png', skip_pipeline: true) %>" />
+    <meta property="og:image" content="<%= asset_url('social-share.png') %>" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:locale:alternate" content="en_US" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="<%= content_for?(:title) ? yield(:title) : Rails.configuration.x.app_name %>" />
-    <meta name="twitter:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata. Encuentra obituarios y avisos fúnebres publicados en el diario.' %>" />
-    <meta name="twitter:image" content="<%= asset_path('social-share.png', skip_pipeline: true) %>" />
+    <meta name="twitter:description" content="<%= content_for?(:description) ? yield(:description) : 'Buscador de avisos fúnebres en La Plata desde 2006. Consulta histórica de obituarios del Diario El Día para investigadores, genealogistas y reconstrucción familiar.' %>" />
+    <meta name="twitter:image" content="<%= asset_url('social-share-square.png') %>" />
     <!-- End Social Media Meta Tags -->
     
     <%= csrf_meta_tags %>
@@ -44,8 +60,13 @@
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
 
     <!-- Meta tags -->
-    <meta name="keywords" content="avisos fúnebres, obituarios, La Plata, servicios fúnebres, diario">
+    <meta name="keywords" content="avisos fúnebres, obituarios, La Plata, Diario El Día, consulta histórica, genealogía, investigación social, reconstrucción familiar, Buenos Aires, Argentina">
     <meta name="author" content="<%= Rails.configuration.x.app_name %>">
+    <meta name="subject" content="Historia local, Genealogía, Investigación social">
+    <meta name="category" content="Historia y Genealogía">
+    <meta name="coverage" content="La Plata, Buenos Aires, Argentina">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content="<%= Rails.configuration.x.app_name %>">
@@ -68,25 +89,85 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "WebApplication",
       "name": "<%= Rails.configuration.x.app_name %>",
       "url": "<%= root_url %>",
-      "description": "Servicio de búsqueda de avisos fúnebres en La Plata, Argentina",
-      "foundingDate": "2025",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "La Plata",
-        "addressRegion": "Buenos Aires",
-        "addressCountry": "AR"
+      "description": "Buscador de avisos fúnebres en la ciudad de La Plata, a partir del día 2 de mayo de 2006, sobre la base de las publicaciones del Diario El Día, con fines de consulta histórica y como herramienta auxiliar para investigadores de las ciencias sociales, genealógicas y la reconstrucción de historias familiares.",
+      "applicationCategory": "ReferenceApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "dateCreated": "2025-01-01",
+      "dateModified": "<%= Time.current.strftime('%Y-%m-%d') %>",
+      "inLanguage": "es-AR",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "ARS"
       },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer service",
-        "availableLanguage": "Spanish"
+      "author": {
+        "@type": "Organization",
+        "name": "<%= Rails.configuration.x.app_name %>",
+        "url": "<%= root_url %>",
+        "description": "Servicio de búsqueda de avisos fúnebres en La Plata, Argentina",
+        "foundingDate": "2025",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "La Plata",
+          "addressRegion": "Buenos Aires",
+          "addressCountry": "AR"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": "Spanish"
+        },
+        "sameAs": [
+          "https://github.com/daniffig"
+        ]
       },
-      "sameAs": [
-        "https://github.com/daniffig"
-      ]
+      "publisher": {
+        "@type": "Organization",
+        "name": "<%= Rails.configuration.x.app_name %>",
+        "url": "<%= root_url %>"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Investigadores, genealogistas, historiadores, estudiantes de ciencias sociales"
+      },
+      "about": [
+        {
+          "@type": "Thing",
+          "name": "Avisos fúnebres",
+          "description": "Publicaciones de obituarios y avisos fúnebres"
+        },
+        {
+          "@type": "Thing", 
+          "name": "Historia local",
+          "description": "Historia de La Plata y sus habitantes"
+        },
+        {
+          "@type": "Thing",
+          "name": "Genealogía",
+          "description": "Investigación genealógica y reconstrucción familiar"
+        }
+      ],
+      "spatialCoverage": {
+        "@type": "Place",
+        "name": "La Plata",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "La Plata",
+          "addressRegion": "Buenos Aires",
+          "addressCountry": "AR"
+        }
+      },
+      "temporalCoverage": "2006-05-02/",
+      "sourceOrganization": {
+        "@type": "Organization",
+        "name": "Diario El Día",
+        "url": "https://www.eldia.com"
+      }
     }
     </script>
 
