@@ -7,9 +7,14 @@
 set :environment, ENV['RAILS_ENV'] || 'development'
 set :output, 'log/cron.log'
 
-# Run the scraper every day at 2 AM (adjust the time as needed)
+# Run the scraper every day at 12:00 PM
 every 1.day, at: '12:00 pm' do
   rake "funeral_notices:scrape"
+end
+
+# Generate and submit sitemap every day at 1:00 PM (after scraping)
+every 1.day, at: '1:00 pm' do
+  rake "sitemap:generate"
 end
 
 # Learn more: http://github.com/javan/whenever
