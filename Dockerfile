@@ -43,21 +43,16 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y cron curl libvips libyaml-dev postgresql-client && \
+    apt-get install --no-install-recommends -y curl libvips libyaml-dev postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Start cron as root before switching to rails user (required for whenever gem and cron jobs)
-RUN service cron start && \
-    useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp && \
-    # Fix cron permissions for non-root user
-    mkdir -p /var/run && \
-    chown rails:rails /var/run && \
-    chmod 755 /var/run
+# Create rails user
+RUN useradd rails --create-home --shell /bin/bash && \
+    chown -R rails:rails db log storage tmp
 
 USER rails:rails
 
