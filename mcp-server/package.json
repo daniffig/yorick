@@ -1,0 +1,24 @@
+{
+  "name": "funeral-notices-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for funeral notices data access",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["mcp", "funeral-notices", "elasticsearch", "postgresql"],
+  "author": "Yorick Funeral Notices",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "@elastic/elasticsearch": "^8.0.0",
+    "pg": "^8.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
