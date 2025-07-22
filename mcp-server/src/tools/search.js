@@ -33,8 +33,7 @@ async function searchFuneralNotices(args) {
           }
         },
         sort: [
-          { published_on: { order: 'desc' } },
-          { full_name: { order: 'asc' } }
+          { published_on: { order: 'desc' } }
         ],
         size: Math.min(limit, 500) // Cap at 500 results
       }

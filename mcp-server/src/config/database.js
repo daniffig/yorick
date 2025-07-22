@@ -19,6 +19,8 @@ const es = new ESClient({
   tls: {
     rejectUnauthorized: false, // For development
   },
+  maxRetries: 3,
+  requestTimeout: 10000
 });
 
 // Initialize connections
