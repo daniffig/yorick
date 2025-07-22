@@ -93,21 +93,12 @@ rake funeral_notices:scrape [start_date=YYYY-MM-DD end_date=YYYY-MM-DD recovery_
 - If no dates are provided, it will run from the very first date to today.
 - In recovery mode, the task will only add notices whose text content is not already present for a given date, avoiding duplicates.
 
-### 2. Run a Daily Scrape with Cron
+### 2. Run a Daily Scrape
 
-The app uses the [whenever](https://github.com/javan/whenever) gem to schedule a daily scrape.  
-See `config/schedule.rb` for the cron job definition:
-
-- By default, it runs every day at 12:00 pm:
-  ```
-  every 1.day, at: '12:00 pm' do
-    rake "funeral_notices:scrape"
-  end
-  ```
-- To update your crontab:
-  ```bash
-  whenever --update-crontab
-  ```
+To run the scraper manually:
+```bash
+bundle exec rake funeral_notices:scrape
+```
 
 ### 3. Reindex Entries (Elasticsearch)
 
@@ -137,28 +128,7 @@ bundle exec rake sitemap:submit_to_google
 - `GOOGLE_SEARCH_CONSOLE_SITE_URL`: Your site URL (e.g., https://funebres.enlaplata.com.ar)
 - `GOOGLE_SEARCH_CONSOLE_CREDENTIALS`: Path to your Google API credentials JSON file
 
-### 5. Scheduled Tasks
 
-The app uses the [whenever](https://github.com/javan/whenever) gem to schedule daily tasks.  
-See `config/schedule.rb` for the cron job definitions:
-
-- **Daily scraping** at 12:00 PM:
-  ```
-  every 1.day, at: '12:00 pm' do
-    rake "funeral_notices:scrape"
-  end
-  ```
-- **Daily sitemap generation** at 1:00 PM (after scraping):
-  ```
-  every 1.day, at: '1:00 pm' do
-    rake "sitemap:generate"
-  end
-  ```
-
-To update your crontab:
-```bash
-whenever --update-crontab
-```
 
 ## Environment Variables
 

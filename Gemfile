@@ -78,4 +78,3 @@ gem 'pagy', '~> 9.3'
 gem 'sitemap_generator', '~> 6.3'
 gem 'tailwindcss-rails', '~> 4.2'
 gem 'view_component', '~> 3.21'
-gem 'whenever', '~> 1.0', require: false
