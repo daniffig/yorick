@@ -3,7 +3,7 @@ class FuneralNoticesController < ApplicationController
     @pagy, @funeral_notices = if params[:full_name].present? || params[:content].present?
                                 search_funeral_notices
                               else
-                                pagy(FuneralNotice.order(published_on: :desc))
+                                pagy(FuneralNotice.order(published_on: :desc, full_name: :asc))
                               end
 
     # Set cache headers for index page
@@ -94,13 +94,21 @@ class FuneralNoticesController < ApplicationController
 
   def search_funeral_notices
     search_query = build_search_query(search_params)
-    return pagy(FuneralNotice.order(published_on: :desc)) if search_query.empty?
+    return pagy(FuneralNotice.order(published_on: :desc, full_name: :asc)) if search_query.empty?
 
-    results = FuneralNoticesIndex.query(search_query).load
+    # Get all matching results from Elasticsearch (up to 500)
+    results = FuneralNoticesIndex.query(search_query).limit(500).load
     ids = results.map(&:id)
     notices = FuneralNotice.where(id: ids).index_by(&:id)
     ordered_notices = ids.filter_map { |id| notices[id.to_i] }
-    pagy_array(ordered_notices)
+
+    # Sort by published_on desc, full_name asc
+    sorted_notices = sort_notices_by_date_and_name(ordered_notices)
+    pagy_array(sorted_notices)
+  end
+
+  def sort_notices_by_date_and_name(notices)
+    notices.sort_by { |notice| [-notice.published_on.to_time.to_i, notice.full_name.downcase] }
   end
 
   def search_params
