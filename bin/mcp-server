@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Change to the MCP server directory
+cd mcp-server
+
+# Check if node_modules exists, if not install dependencies
+if [ ! -d "node_modules" ]; then
+  echo "Installing MCP server dependencies..."
+  npm install
+fi
+
+# Set default environment variables if not already set
+export NODE_ENV="${NODE_ENV:-development}"
+export DATABASE_URL="${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/app_development}"
+export ELASTICSEARCH_URL="${ELASTICSEARCH_URL:-http://localhost:9200}"
+
+# Start the MCP server
+if [ "$NODE_ENV" = "production" ]; then
+  echo "Starting MCP server in production mode..."
+  exec npm start
+else
+  echo "Starting MCP server in development mode..."
+  exec npm run dev
+fi 

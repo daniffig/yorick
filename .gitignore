@@ -41,3 +41,18 @@ vendor/bundle
 
 # Ignore production-test folder
 /.production-test
+
+# MCP Server Node.js files
+/mcp-server/node_modules/
+/mcp-server/.env
+/mcp-server/npm-debug.log*
+/mcp-server/yarn-debug.log*
+/mcp-server/yarn-error.log*
+/mcp-server/.DS_Store
+/mcp-server/.nyc_output
+/mcp-server/coverage/
+/mcp-server/.env.local
+/mcp-server/.env.development.local
+/mcp-server/.env.test.local
+/mcp-server/.env.production.local
+inspector/
