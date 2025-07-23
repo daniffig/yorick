@@ -55,3 +55,4 @@ vendor/bundle
 /mcp-server/.env.development.local
 /mcp-server/.env.test.local
 /mcp-server/.env.production.local
+inspector/

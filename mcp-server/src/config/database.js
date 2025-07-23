@@ -1,9 +1,11 @@
-const { Client } = require('pg');
-const { Client: ESClient } = require('@elastic/elasticsearch');
+import pg from 'pg';
+import { Client as ESClient } from '@elastic/elasticsearch';
+
+const { Client } = pg;
 
 // PostgreSQL client
 const db = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/yorick_development',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/app_development',
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -48,7 +50,7 @@ async function closeConnections() {
   }
 }
 
-module.exports = {
+export {
   db,
   es,
   initializeConnections,

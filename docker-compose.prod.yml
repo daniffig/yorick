@@ -64,6 +64,32 @@ services:
       start_period: 60s
     mem_limit: 1g
 
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    container_name: yorick-mcp-server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-yorick}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-yorick}
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      db:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - yorick-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP Server health check')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
 volumes:
   postgres_data:
     driver: local

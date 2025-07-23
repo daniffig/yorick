@@ -1,4 +1,4 @@
-const { db } = require('../config/database');
+import { db } from '../config/database.js';
 
 async function listFuneralNotices(args) {
   const { 
@@ -57,28 +57,27 @@ async function listFuneralNotices(args) {
     const offset = (page - 1) * limit;
     const totalPages = Math.ceil(total / limit);
 
-    // Get paginated results
-    const dataQuery = `
-      SELECT id, full_name, content, published_on, source_link, hash_id, created_at, updated_at
-      FROM funeral_notices 
-      ${whereClause}
-      ORDER BY ${order_by} ${order_direction.toUpperCase()}, full_name ASC
-      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
-    `;
-    
-    params.push(limit, offset);
-    const dataResult = await db.query(dataQuery, params);
+            // Get paginated results
+        const dataQuery = `
+          SELECT full_name, content, published_on, source_link, hash_id, created_at, updated_at
+          FROM funeral_notices
+          ${whereClause}
+          ORDER BY ${order_by} ${order_direction.toUpperCase()}, full_name ASC
+          LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        `;
 
-    const notices = dataResult.rows.map(row => ({
-      id: row.id,
-      full_name: row.full_name,
-      content: row.content,
-      published_on: row.published_on,
-      source_link: row.source_link,
-      hash_id: row.hash_id,
-      created_at: row.created_at,
-      updated_at: row.updated_at
-    }));
+        params.push(limit, offset);
+        const dataResult = await db.query(dataQuery, params);
+
+        const notices = dataResult.rows.map(row => ({
+          hash_id: row.hash_id,
+          full_name: row.full_name,
+          content: row.content,
+          published_on: row.published_on,
+          source_link: row.source_link,
+          created_at: row.created_at,
+          updated_at: row.updated_at
+        }));
 
     return {
       content: [
@@ -113,6 +112,6 @@ async function listFuneralNotices(args) {
   }
 }
 
-module.exports = {
+export {
   listFuneralNotices
 }; 

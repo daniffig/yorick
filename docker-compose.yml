@@ -23,6 +23,24 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
 
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile.dev
+    container_name: yorick-mcp-server-dev
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp_development
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - ./mcp-server:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - elasticsearch
+    ports:
+      - "3001:3001"
+
 volumes:
   db_data:
   elasticsearch_data:

@@ -21,10 +21,10 @@ Search funeral notices by name, date, or content using Elasticsearch.
 - `limit` (optional): Maximum results (default: 50, max: 500)
 
 ### `get_funeral_notice`
-Retrieve a specific funeral notice by ID.
+Retrieve a specific funeral notice by hash_id.
 
 **Parameters:**
-- `id` (required): Funeral notice ID
+- `hash_id` (required): Funeral notice hash_id
 
 ### `list_funeral_notices`
 List funeral notices with pagination and filtering.
@@ -51,6 +51,15 @@ List funeral notices with pagination and filtering.
    ```
 
 3. **Start the server:**
+
+   **Option 1: HTTP Transport (recommended for testing)**
+   ```bash
+   # Development mode with HTTP transport
+   npm run dev:http
+   ```
+   Access at: `http://localhost:3001/mcp`
+
+   **Option 2: Stdio Transport (for AI assistant integration)**
    ```bash
    # Development mode with auto-reload
    npm run dev
@@ -65,16 +74,55 @@ List funeral notices with pagination and filtering.
 - `ELASTICSEARCH_URL`: Elasticsearch endpoint
 - `ELASTICSEARCH_USERNAME`: Elasticsearch username (optional)
 - `ELASTICSEARCH_PASSWORD`: Elasticsearch password (optional)
+- `MCP_PORT`: HTTP server port (default: 3001)
 - `NODE_ENV`: Environment (development/production)
 - `LOG_LEVEL`: Logging level (info/debug/error)
 
-## Usage with AI Assistants
+## Usage
+
+### With AI Assistants
 
 The MCP server can be used with any AI assistant that supports the Model Context Protocol, such as:
 
 - Claude Desktop
 - Anthropic's Claude
 - Other MCP-compatible tools
+
+### With MCP Inspector
+
+For testing and debugging:
+
+1. Start the MCP Inspector:
+   ```bash
+   cd inspector && npm start
+   ```
+
+2. Open `http://localhost:3000` in your browser
+
+3. Add your server:
+   - Transport: **HTTP**
+   - URL: `http://localhost:3001/mcp`
+
+### Direct HTTP Access
+
+The server exposes a REST API at `http://localhost:3001/mcp` for direct testing:
+
+```bash
+# Initialize a session
+curl -X POST http://localhost:3001/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {"tools": {}},
+      "clientInfo": {"name": "test-client", "version": "1.0.0"}
+    }
+  }'
+```
 
 ## Development
 

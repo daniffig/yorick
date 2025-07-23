@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+echo "Installing MCP server dependencies..."
+
+# Change to the MCP server directory
+cd mcp-server
+
+# Install dependencies
+npm install
+
+echo "MCP server dependencies installed successfully!"
+echo "You can now start the MCP server with: ./bin/mcp-server" 

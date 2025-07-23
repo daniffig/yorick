@@ -49,6 +49,7 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for complete workflow details.
    - Rails server: [http://localhost:3000](http://localhost:3000)
    - Elasticsearch: [http://localhost:9200](http://localhost:9200)
    - PostgreSQL: [localhost:5432](localhost:5432) (user: `postgres`, password: `postgres`)
+   - MCP Server: Available for AI assistant integration (see MCP Server section below)
 
 ---
 
@@ -99,6 +100,81 @@ To run the scraper manually:
 ```bash
 bundle exec rake funeral_notices:scrape
 ```
+
+---
+
+## MCP Server
+
+The application includes a Model Context Protocol (MCP) server that provides AI assistants with secure access to funeral notices data through HTTP transport.
+
+### Development Setup
+
+The MCP server can be started in several ways:
+
+**Option 1: Using npm scripts (recommended for testing)**
+```bash
+# Install dependencies first (if not already done)
+./bin/mcp-install
+
+# Start with HTTP transport for web-based testing
+npm run dev:http
+```
+
+**Option 2: Using Docker Compose**
+```bash
+docker-compose up -d
+```
+
+**Option 3: Using the bin script**
+```bash
+# Install dependencies first (if not already done)
+./bin/mcp-install
+
+# Start the MCP server
+./bin/mcp-server
+```
+
+### Testing with MCP Inspector
+
+1. Start the MCP Inspector:
+   ```bash
+   cd inspector && npm start
+   ```
+
+2. Open `http://localhost:3000` in your browser
+
+3. Add your server:
+   - Transport: **HTTP**
+   - URL: `http://localhost:3001/mcp`
+
+### Production Setup
+
+The MCP server is included in the production Docker Compose configuration (`docker-compose.prod.yml`) and will be automatically deployed with the main application.
+
+### Available Tools
+
+- **`search_funeral_notices`**: Full-text search using Elasticsearch
+  - Parameters: `query`, `date_from`, `date_to`, `limit`
+- **`get_funeral_notice`**: Retrieve specific notices by hash_id
+  - Parameters: `hash_id`
+- **`list_funeral_notices`**: Paginated listing with filtering and sorting
+  - Parameters: `page`, `limit`, `date_from`, `date_to`, `order_by`, `order_direction`
+
+### Security Features
+
+- Uses `hash_id` instead of database IDs for security
+- Input validation on all parameters using Zod schemas
+- Error handling with sanitized messages
+- Connection pooling for database access
+- CORS configured for browser-based clients
+- Session management for secure communication
+
+### Access URL
+
+- **Development**: `http://localhost:3001/mcp`
+- **Production**: Configured via `MCP_PORT` environment variable
+
+For detailed documentation, see [mcp-server/README.md](mcp-server/README.md).
 
 ### 3. Reindex Entries (Elasticsearch)
 

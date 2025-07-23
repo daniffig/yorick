@@ -1,27 +1,27 @@
-const { db } = require('../config/database');
+import { db } from '../config/database.js';
 
 async function getFuneralNotice(args) {
-  const { id } = args;
+  const { hash_id } = args;
 
-  if (!id) {
-    throw new Error('ID parameter is required');
+  if (!hash_id) {
+    throw new Error('hash_id parameter is required');
   }
 
   try {
     const query = `
-      SELECT id, full_name, content, published_on, source_link, hash_id, created_at, updated_at
-      FROM funeral_notices 
-      WHERE id = $1
+      SELECT full_name, content, published_on, source_link, hash_id, created_at, updated_at
+      FROM funeral_notices
+      WHERE hash_id = $1
     `;
-    
-    const result = await db.query(query, [id]);
-    
+
+    const result = await db.query(query, [hash_id]);
+
     if (result.rows.length === 0) {
       return {
         content: [
           {
             type: "text",
-            text: `Funeral notice with ID ${id} not found`
+            text: `Funeral notice with hash_id ${hash_id} not found`
           }
         ],
         isError: false,
@@ -32,7 +32,7 @@ async function getFuneralNotice(args) {
     }
 
     const notice = result.rows[0];
-    
+
     return {
       content: [
         {
@@ -44,12 +44,11 @@ async function getFuneralNotice(args) {
       metadata: {
         found: true,
         notice: {
-          id: notice.id,
+          hash_id: notice.hash_id,
           full_name: notice.full_name,
           content: notice.content,
           published_on: notice.published_on,
           source_link: notice.source_link,
-          hash_id: notice.hash_id,
           created_at: notice.created_at,
           updated_at: notice.updated_at
         }
@@ -62,6 +61,6 @@ async function getFuneralNotice(args) {
   }
 }
 
-module.exports = {
+export {
   getFuneralNotice
 }; 

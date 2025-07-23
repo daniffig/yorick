@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "nodemon --watch src src/index.js",
+    "start:http": "node src/index.js",
+    "dev:http": "nodemon --watch src src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,12 +18,15 @@
   ],
   "author": "Yorick Funeral Notices",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@elastic/elasticsearch": "^8.13.0",
-    "@modelcontextprotocol/sdk": "^0.4.0",
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
-    "pg": "^8.0.0"
+    "express": "^5.1.0",
+    "pg": "^8.0.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

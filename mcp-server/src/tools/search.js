@@ -1,4 +1,4 @@
-const { es } = require('../config/database');
+import { es } from '../config/database.js';
 
 async function searchFuneralNotices(args) {
   const { query, date_from, date_to, limit = 50 } = args;
@@ -49,15 +49,14 @@ async function searchFuneralNotices(args) {
 
     const response = await es.search(searchQuery);
     
-    const results = response.hits.hits.map(hit => ({
-      id: hit._source.id,
-      full_name: hit._source.full_name,
-      content: hit._source.content,
-      published_on: hit._source.published_on,
-      source_link: hit._source.source_link,
-      hash_id: hit._source.hash_id,
-      score: hit._score
-    }));
+            const results = response.hits.hits.map(hit => ({
+          hash_id: hit._source.hash_id,
+          full_name: hit._source.full_name,
+          content: hit._source.content,
+          published_on: hit._source.published_on,
+          source_link: hit._source.source_link,
+          score: hit._score
+        }));
 
     return {
       content: [
@@ -80,6 +79,6 @@ async function searchFuneralNotices(args) {
   }
 }
 
-module.exports = {
+export {
   searchFuneralNotices
 }; 
