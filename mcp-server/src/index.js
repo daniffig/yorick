@@ -156,11 +156,12 @@ initializeConnections().catch(error => {
 
 // Start the server
 const PORT = process.env.MCP_PORT || 3001;
-app.listen(PORT, (error) => {
+const HOST = process.env.MCP_HOST || '0.0.0.0';
+app.listen(PORT, HOST, (error) => {
   if (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
   }
-  console.log(`Funeral Notices MCP Server listening on port ${PORT}`);
-  console.log(`Access the server at: http://localhost:${PORT}/mcp`);
+  console.log(`Funeral Notices MCP Server listening on ${HOST}:${PORT}`);
+  console.log(`Access the server at: http://${HOST}:${PORT}/mcp`);
 }); 
