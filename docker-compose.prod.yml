@@ -65,9 +65,7 @@ services:
     mem_limit: 1g
 
   mcp-server:
-    build:
-      context: ./mcp-server
-      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY:-your-org/yorick}-mcp:main
     container_name: yorick-mcp-server
     restart: unless-stopped
     env_file:
@@ -76,6 +74,7 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-yorick}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-yorick}
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - MCP_PORT=3001
     depends_on:
       db:
         condition: service_healthy
@@ -84,7 +83,7 @@ services:
     networks:
       - yorick-network
     healthcheck:
-      test: ["CMD", "node", "-e", "console.log('MCP Server health check')"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/mcp', (res) => { process.exit(res.statusCode === 405 ? 0 : 1) })"]
       interval: 30s
       timeout: 10s
       retries: 3

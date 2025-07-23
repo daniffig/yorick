@@ -8,7 +8,8 @@
     "dev": "nodemon --watch src src/index.js",
     "start:http": "node src/index.js",
     "dev:http": "nodemon --watch src src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo 'No build step required for Node.js'",
+    "test": "echo 'No tests configured yet'"
   },
   "keywords": [
     "mcp",

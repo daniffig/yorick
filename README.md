@@ -151,6 +151,25 @@ docker-compose up -d
 
 The MCP server is included in the production Docker Compose configuration (`docker-compose.prod.yml`) and will be automatically deployed with the main application.
 
+#### Docker Images
+
+The MCP server uses a multi-stage Docker build for minimal production image size:
+
+- **Development**: Uses `Dockerfile.dev` with hot-reloading and volume mounts
+- **Production**: Uses `Dockerfile.prod` with optimized Node.js Alpine image
+
+#### GitHub Actions
+
+The MCP server Docker image is automatically built and pushed via GitHub Actions:
+
+- **PR builds**: Images tagged with `pr-{number}` and commit SHA
+- **Merge builds**: Images tagged with `main` and `latest`
+- **Registry**: `ghcr.io/{repository}-mcp`
+
+#### Environment Variables
+
+Production environment variables are configured via `.env` file or Docker Compose environment section.
+
 ### Available Tools
 
 - **`search_funeral_notices`**: Full-text search using Elasticsearch

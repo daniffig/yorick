@@ -35,8 +35,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Try to pull image by commit SHA
-        id: pull_commit
+      # Retag Rails app
+      - name: Try to pull Rails image by commit SHA
+        id: pull_rails_commit
         run: |
           if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.pr_info.outputs.commit_sha }}; then
             echo "success=true" >> $GITHUB_OUTPUT
@@ -45,9 +46,9 @@ jobs:
             echo "success=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Try to pull image by PR tag as fallback
-        id: pull_pr
-        if: steps.pull_commit.outputs.success != 'true'
+      - name: Try to pull Rails image by PR tag as fallback
+        id: pull_rails_pr
+        if: steps.pull_rails_commit.outputs.success != 'true'
         run: |
           if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ steps.pr_info.outputs.pr_number }}; then
             echo "success=true" >> $GITHUB_OUTPUT
@@ -56,16 +57,46 @@ jobs:
             echo "success=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Fail if no image found
-        if: steps.pull_commit.outputs.success != 'true' && steps.pull_pr.outputs.success != 'true'
+      # Retag MCP server
+      - name: Try to pull MCP image by commit SHA
+        id: pull_mcp_commit
         run: |
-          echo "❌ No image found for commit or PR. Aborting."
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:${{ steps.pr_info.outputs.commit_sha }}; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "source_tag=${{ steps.pr_info.outputs.commit_sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Try to pull MCP image by PR tag as fallback
+        id: pull_mcp_pr
+        if: steps.pull_mcp_commit.outputs.success != 'true'
+        run: |
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:pr-${{ steps.pr_info.outputs.pr_number }}; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "source_tag=pr-${{ steps.pr_info.outputs.pr_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail if no images found
+        if: (steps.pull_rails_commit.outputs.success != 'true' && steps.pull_rails_pr.outputs.success != 'true') || (steps.pull_mcp_commit.outputs.success != 'true' && steps.pull_mcp_pr.outputs.success != 'true')
+        run: |
+          echo "❌ No images found for commit or PR. Aborting."
           exit 1
 
-      - name: Tag and push as main/latest
+      - name: Tag and push Rails app as main/latest
         run: |
-          TAG="${{ steps.pull_commit.outputs.source_tag || steps.pull_pr.outputs.source_tag }}"
+          TAG="${{ steps.pull_rails_commit.outputs.source_tag || steps.pull_rails_pr.outputs.source_tag }}"
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Tag and push MCP server as main/latest
+        run: |
+          TAG="${{ steps.pull_mcp_commit.outputs.source_tag || steps.pull_mcp_pr.outputs.source_tag }}"
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:$TAG ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:main
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-mcp:latest

@@ -145,12 +145,36 @@ src/
 3. Register it in `src/index.js`
 4. Update this README with tool documentation
 
+## Production Deployment
+
+### Docker Images
+
+The MCP server supports both development and production Docker images:
+
+- **Development**: `Dockerfile.dev` - Includes hot-reloading and development dependencies
+- **Production**: `Dockerfile.prod` - Multi-stage build with minimal Alpine image
+
+### GitHub Actions
+
+Docker images are automatically built and pushed via GitHub Actions:
+
+- **Registry**: `ghcr.io/{repository}-mcp`
+- **Tags**: `pr-{number}`, commit SHA, `main`, `latest`
+- **Build context**: `./mcp-server`
+- **Production file**: `Dockerfile.prod`
+
+### Health Checks
+
+The production image includes health checks that verify the MCP server is responding correctly.
+
 ## Security
 
 - Database connections use connection pooling
-- Input validation on all parameters
+- Input validation on all parameters using Zod schemas
 - Error handling with sanitized messages
-- Optional API key authentication
+- CORS configured for browser-based clients
+- Session management for secure communication
+- Non-root user execution in production containers
 
 ## License
 
