@@ -10,7 +10,7 @@ async function searchFuneralNotices(args) {
   try {
     // Build Elasticsearch query
     const searchQuery = {
-      index: 'funeral_notices',
+      index: process.env.ELASTICSEARCH_INDEX || 'yorick_production_funeral_notices',
       body: {
         query: {
           bool: {
