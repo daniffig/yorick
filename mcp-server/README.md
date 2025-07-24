@@ -74,6 +74,7 @@ List funeral notices with pagination and filtering.
 - `ELASTICSEARCH_URL`: Elasticsearch endpoint
 - `ELASTICSEARCH_USERNAME`: Elasticsearch username (optional)
 - `ELASTICSEARCH_PASSWORD`: Elasticsearch password (optional)
+- `ELASTICSEARCH_INDEX`: Elasticsearch index name (default: yorick_production_funeral_notices)
 - `MCP_PORT`: HTTP server port (default: 3001)
 - `NODE_ENV`: Environment (development/production)
 - `LOG_LEVEL`: Logging level (info/debug/error)
